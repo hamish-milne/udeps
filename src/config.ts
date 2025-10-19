@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { join } from "node:path";
 import consola from "consola";
 import { packageDirectorySync } from "package-directory";
+import { cError } from "./colors.ts";
 
 export interface UdepsConfig {
   outputFile: string;
@@ -15,25 +16,25 @@ interface TSConfig {
   };
 }
 
-const esVersions = [
-  "es5",
-  "es2015",
-  "es2016",
-  "es2017",
-  "es2018",
-  "es2019",
-  "es2020",
-  "es2021",
-  "es2022",
-  "es2023",
-  "es2024",
-  "es2025",
-];
+function getEsVersionIndex(esVersion: string) {
+  const numberPart = esVersion.match(/^es(\d+)/i);
+  if (numberPart) {
+    const year = parseInt(numberPart[1], 10);
+    if (year <= 6) {
+      return year;
+    }
+    if (year >= 2015 && year <= 2099) {
+      return year - 2015 + 6;
+    }
+  }
+  consola.error(`Invalid ES version: ${cError(esVersion)}`);
+  return -1;
+}
 
 const defaultConfig: UdepsConfig = {
   outputFile: "udeps.ts",
   lib: ["es2020"],
-  registry: ["./src/udeps.ts", "./src/udeps-legacy.ts"],
+  registry: [],
 };
 
 export function loadConfig(): UdepsConfig {
@@ -60,31 +61,13 @@ export function checkLibSupport(
   targetLib: string[],
   requiredLib: string[],
 ): string[] {
-  const targetSet = new Set<string>();
-  for (const lib of targetLib.map((l) => l.toLowerCase())) {
-    const [esVersion, ...parts] = lib.split(".");
-    if (parts.length === 0) {
-      const esVerIdx = esVersions.indexOf(esVersion);
-      if (esVerIdx < 0) {
-        throw new Error(`Target lib "${esVersion}" is not a known ES version.`);
-      }
-      for (let i = 0; i <= esVerIdx; i++) {
-        targetSet.add(esVersions[i]);
-      }
-    } else {
-      targetSet.add(lib);
-    }
-  }
-  const unsupportedLibs: string[] = [];
-  for (const reqLib of requiredLib.map((l) => l.toLowerCase())) {
-    if (targetSet.has(reqLib)) {
-      continue;
-    }
-    const [esVersion, ...parts] = reqLib.split(".");
-    if (parts.length > 0 && targetSet.has(esVersion)) {
-      continue;
-    }
-    unsupportedLibs.push(reqLib);
-  }
-  return unsupportedLibs;
+  const targetEsVersion = Math.max(
+    ...targetLib.filter((x) => !x.includes(".")).map(getEsVersionIndex),
+  );
+  const targetSet = targetLib.map((l) => l.toLowerCase());
+  return requiredLib.filter(
+    (lib) =>
+      getEsVersionIndex(lib) > targetEsVersion &&
+      !targetSet.includes(lib.toLowerCase()),
+  );
 }

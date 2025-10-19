@@ -1,11 +1,10 @@
 import { readFile } from "node:fs/promises";
 import type { namedTypes } from "ast-types";
 import consola from "consola";
-import { colorize } from "consola/utils";
 import { type Annotation, parse as docParse } from "doctrine";
 import { parse as jsParse, print } from "recast";
 import * as typescriptParser from "recast/parsers/typescript.js";
-import { cGray, cStrong } from "./colors.ts";
+import { cGray, cInfo, cStrong } from "./colors.ts";
 import { checkLibSupport, type UdepsConfig } from "./config.ts";
 
 export interface FunctionEntry {
@@ -54,9 +53,9 @@ async function loadRegistry(path: string) {
 }
 
 export async function* loadRegistries(config: UdepsConfig) {
-  consola.verbose(`Supported libs: ${colorize("cyan", config.lib.join(", "))}`);
+  consola.verbose(`Supported libs: ${cInfo(config.lib.join(", "))}`);
   for (const registry of config.registry) {
-    consola.verbose(`Using registry: ${colorize("cyan", registry)}`);
+    consola.verbose(`Using registry: ${cInfo(registry)}`);
     const registryObj = await loadRegistry(registry);
     yield [registry, registryObj] as const;
   }

@@ -1,9 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { namedTypes } from "ast-types";
 import consola from "consola";
-import { colorize } from "consola/utils";
 import { parse as jsParse, print } from "recast";
 import * as typescriptParser from "recast/parsers/typescript.js";
+import { cError, cInfo, cSuccess, cWarning } from "./colors.ts";
 import type { FunctionEntry } from "./registry.ts";
 
 function removeMetaDocTags(func: namedTypes.ExportNamedDeclaration) {
@@ -39,20 +39,20 @@ export function insertIntoFile(filePath: string, entry: FunctionEntry) {
       }
       if (node.declaration.id.name === entry.name) {
         consola.error(
-          `Function ${colorize("red", entry.name)} already exists in ${colorize("cyan", filePath)}.`,
+          `Function ${cError(entry.name)} already exists in ${cInfo(filePath)}.`,
         );
         return;
       }
     }
   }
   body.splice(i, 0, removeMetaDocTags(entry.content));
-  consola.verbose(`Writing changes to ${colorize("cyan", filePath)}.`);
+  consola.verbose(`Writing changes to ${cInfo(filePath)}.`);
   writeFileSync(filePath, print(fileAst).code);
 }
 
 export function removeFromFile(filePath: string, names: string[]) {
   if (!existsSync(filePath)) {
-    consola.error(`File ${colorize("cyan", filePath)} does not exist.`);
+    consola.error(`File ${cInfo(filePath)} does not exist.`);
     return;
   }
   const fileAst: namedTypes.File = jsParse(readFileSync(filePath, "utf-8"), {
@@ -68,15 +68,15 @@ export function removeFromFile(filePath: string, names: string[]) {
     );
     if (index === -1) {
       consola.warn(
-        `Function ${colorize("yellow", name)} not found in ${colorize("cyan", filePath)}`,
+        `Function ${cWarning(name)} not found in ${cInfo(filePath)}`,
       );
       continue;
     }
     body.splice(index, 1);
     consola.success(
-      `Function ${colorize("green", name)} removed from ${colorize("cyan", filePath)}`,
+      `Function ${cSuccess(name)} removed from ${cInfo(filePath)}`,
     );
   }
-  consola.verbose(`Writing changes to ${colorize("cyan", filePath)}.`);
+  consola.verbose(`Writing changes to ${cInfo(filePath)}.`);
   writeFileSync(filePath, print(fileAst).code);
 }
