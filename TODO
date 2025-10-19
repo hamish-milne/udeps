@@ -1,0 +1,19 @@
+Config file:
+  ☐ JSON Schema
+  ☐ Use JSON5 for tsconfig
+Output:
+  ☐ JS support, strip types
+Registry:
+  ☐ Host registry in separate repo
+  ☐ 0BSD license
+  ☐ Fetch from URL or project-local path
+Admin:
+  ☐ CI
+  ☐ npm package
+  ☐ Unit testing
+  ☐ Coverage badges
+Features:
+  ☐ Compare changes with registry impl
+  ☐ Audit for obsolete entries (with 'list' command)
+  ☐ Auto-upgrade call sites
+  ☐ 'config' command

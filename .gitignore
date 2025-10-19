@@ -1,0 +1,6 @@
+/udeps.ts
+/udeps.json
+/dist
+/.yarn
+/.pnp*
+/node_modules
