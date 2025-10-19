@@ -182,9 +182,9 @@ export function setToStringTag(target: object, value: string) {
  * @param obj   The object to map
  * @param fn    The mapping function
  * @returns     A new object with mapped values
- * @requires     ES5
- * @requires     ES2017.Object
- * @requires     ES2019.Object
+ * @requires    ES5
+ * @requires    ES2017.Object
+ * @requires    ES2019.Object
  */
 export function objectMap<T extends object, U>(
   obj: T,
@@ -248,6 +248,7 @@ export function isNegative(num: number) {
  * @param num    Number to check
  * @returns      True if negative zero, false otherwise
  * @deprecated   inline=consider
+ * @requires     ES2015.Core
  */
 export function isNegativeZero(num: number) {
   return Object.is(num, -0);
@@ -268,7 +269,7 @@ export function isPositiveZero(num: number) {
  * Checks if the current environment is a Continuous Integration (CI) environment.
  * @returns      True if in CI environment, false otherwise
  * @deprecated   inline=consider
- * @requires     module:@types/node
+ * @requires     node:process
  */
 export function isCI() {
   return Boolean(process.env.CI);
@@ -277,7 +278,7 @@ export function isCI() {
 /**
  * Checks if the parent process is npm.
  * @returns      True if parent process is npm, false otherwise
- * @requires     module:@types/node
+ * @requires     node:process
  */
 export function isNPM() {
   return Boolean(process.env.npm_config_user_agent?.startsWith("npm"));
@@ -285,6 +286,7 @@ export function isNPM() {
 
 /**
  * Checks if a value is a number or a numeric string.
+ * Note that this does not account for wrapper objects or cross-realm values, both of which are extremely rare in practice.
  * @param value   Value to check
  * @returns       True if value is a number or numeric string, false otherwise
  * @requires      ES2015.Core
@@ -340,4 +342,79 @@ export function splitLines(input: string) {
  */
 export function unique<T>(input: readonly T[]) {
   return Array.from(new Set(input));
+}
+
+/**
+ * Joins CSS class names into a single string, ignoring falsy values.
+ * @param classes   Array of class names (strings) or falsy values
+ * @returns         Joined class names as a single string
+ * @requires        ES5
+ */
+export function classJoin(...classes: (string | false | null | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
+}
+
+/**
+ * Unwraps a primitive object to its corresponding primitive value.
+ * Note that primitive object wrappers are extremely rare in practice.
+ * @param value   Primitive object or primitive value
+ * @returns       Unwrapped primitive value
+ * @requires      ES5
+ */
+export function unwrapPrimitiveObject(value: unknown) {
+  if (
+    value instanceof Boolean ||
+    value instanceof Number ||
+    value instanceof String
+  ) {
+    return value.valueOf();
+  }
+  return value;
+}
+
+/**
+ * Checks if a value is a boolean.
+ * Note that this does not account for wrapper objects or cross-realm values, both of which are extremely rare in practice.
+ * @param value   Value to check
+ * @returns       True if value is a boolean, false otherwise
+ * @deprecated    inline=recommend
+ */
+export function isBoolean(value: unknown): value is boolean {
+  return typeof value === "boolean";
+}
+
+/**
+ * Checks if a value is a string.
+ * Note that this does not account for wrapper objects or cross-realm values, both of which are extremely rare in practice.
+ * @param value   Value to check
+ * @returns       True if value is a string, false otherwise
+ * @deprecated    inline=recommend
+ */
+export function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+
+/**
+ * Checks if a value is array-like (i.e., has a numeric length property).
+ * @param value   Value to check
+ * @returns       True if value is array-like, false otherwise
+ */
+export function isArrayLike(value: unknown): value is ArrayLike<unknown> {
+  return (
+    Array.isArray(value) ||
+    (typeof value === "object" &&
+      value !== null &&
+      "length" in value &&
+      typeof value.length === "number")
+  );
+}
+
+/**
+ * Checks if a number is an integer.
+ * @param value   Number to check
+ * @returns       True if number is an integer, false otherwise
+ * @deprecated    inline=consider, since=ES2015.Core, replace-with={@link Number.isInteger}
+ */
+export function isInteger(num: number): boolean {
+  return num % 1 === 0;
 }
