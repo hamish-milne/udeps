@@ -1,3 +1,5 @@
+// BSD Zero Clause License
+
 /**
  * Splits an array into chunks of a specified size.
  * @param input  Array to be chunked
@@ -14,6 +16,21 @@ export function chunk<T>(input: readonly T[], size: number) {
     }
     return chunks;
   }, []);
+}
+
+/**
+ * Compares two values for equality using the SameValueZero algorithm.
+ * This is the algorithm used by {@link Array.prototype.includes}, {@link Map}, and {@link Set}.
+ * @param x   First value
+ * @param y   Second value
+ * @returns   True if values are equal, false otherwise
+ */
+export function sameValueZero(x: unknown, y: unknown) {
+  return (
+    x === y ||
+    // biome-ignore lint/suspicious/noSelfCompare: checking for NaN
+    (typeof x === "number" && typeof y === "number" && x !== x && y !== y)
+  );
 }
 
 /**

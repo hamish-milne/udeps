@@ -1,9 +1,11 @@
+// BSD Zero Clause License
+
 /**
  * Checks if an object has a specific property as its own (not inherited) property.
  * @param obj    Object to check
  * @param prop   Property name to check
  * @returns      True if property exists on object, false otherwise
- * @deprecated   since=ES2022.Object, replace-with={@link Object.hasOwn}
+ * @deprecated   since=ES2022.Object, replace-with={@link Object.hasOwn}, inline=consider
  */
 export function objectHasOwn(obj: object, prop: string | symbol) {
   // biome-ignore lint/suspicious/noPrototypeBuiltins: legacy utility function
@@ -11,7 +13,7 @@ export function objectHasOwn(obj: object, prop: string | symbol) {
 }
 
 /**
- * Checks if an array includes a specific item.
+ * Checks if an array includes a specific item (except `NaN`).
  * @param arr   Array to check
  * @param item  Item to find
  * @returns     True if item is found, false otherwise

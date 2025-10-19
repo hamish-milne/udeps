@@ -4,9 +4,11 @@ Config file:
 Output:
   ☐ JS support, strip types
 Registry:
-  ☐ Host registry in separate repo
-  ☐ 0BSD license
+  ✔ Registry in separate subfolder @done(25-10-19 15:12)
+  ✔ 0BSD license @done(25-10-19 15:12)
   ☐ Fetch from URL or project-local path
+  ☐ Replace doctrine with comment-parser
+  ☐ Properly check for nodejs/backend support
 Admin:
   ☐ CI
   ☐ npm package

@@ -16,5 +16,17 @@
     "source.biome": "always"
   },
   "editor.tabSize": 2,
-  "editor.detectIndentation": false
+  "editor.detectIndentation": false,
+  "cSpell.ignorePaths": [
+    "package-lock.json",
+    "node_modules",
+    "vscode-extension",
+    ".git/{info,lfs,logs,refs,objects}/**",
+    ".git/{index,*refs,*HEAD}",
+    ".vscode",
+    ".vscode-insiders",
+    ".yarn/**",
+    "yarn.lock",
+    ".pnp.*"
+  ]
 }

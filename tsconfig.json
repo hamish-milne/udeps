@@ -1,17 +1,9 @@
 {
-    "compilerOptions": {
-        "target": "ES2020",
-        "module": "NodeNext",
-        "moduleResolution": "NodeNext",
-        "lib": ["ES2020"],
-        "strict": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "forceConsistentCasingInFileNames": true,
-        "outDir": "./dist",
-        "allowImportingTsExtensions": true,
-        "noEmit": true
-    },
-    "include": ["src"],
-    "exclude": ["node_modules", "**/*.test.ts"]
+  "compilerOptions": {
+    "noEmit": true
+  },
+  "references": [
+    { "path": "./tsconfig.src.json" },
+    { "path": "./tsconfig.registry.json" }
+  ]
 }

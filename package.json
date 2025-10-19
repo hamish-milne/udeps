@@ -1,12 +1,15 @@
 {
   "type": "module",
+  "engines": {
+    "node": ">=18"
+  },
   "main": "./dist/cli.cjs",
   "packageManager": "yarn@4.10.3",
   "devDependencies": {
     "@babel/parser": "^7.28.4",
     "@biomejs/biome": "^2.2.6",
     "@types/doctrine": "^0.0.9",
-    "@types/node": "^18.0.0",
+    "@types/node": "^18.19.130",
     "@yarnpkg/sdks": "^3.2.3",
     "ast-types": "^0.14.2",
     "citty": "^0.1.6",

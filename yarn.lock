@@ -416,7 +416,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:^18.0.0":
+"@types/node@npm:^18.19.130":
   version: 18.19.130
   resolution: "@types/node@npm:18.19.130"
   dependencies:
@@ -1332,7 +1332,7 @@ __metadata:
     "@babel/parser": "npm:^7.28.4"
     "@biomejs/biome": "npm:^2.2.6"
     "@types/doctrine": "npm:^0.0.9"
-    "@types/node": "npm:^18.0.0"
+    "@types/node": "npm:^18.19.130"
     "@yarnpkg/sdks": "npm:^3.2.3"
     ast-types: "npm:^0.14.2"
     citty: "npm:^0.1.6"
