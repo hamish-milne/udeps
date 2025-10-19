@@ -121,12 +121,13 @@ export function isEntryObsolete(
   config: UdepsConfig,
 ): DeprecatedReason | null {
   const deprecatedTag = entry.doc.tags.find((tag) => tag.tag === "deprecated");
-  if (!deprecatedTag || !deprecatedTag.name) {
+  if (!deprecatedTag) {
     return null;
   }
-  const reason = parseTagProperties<keyof DeprecatedReason>(deprecatedTag.name);
+  const text = `${deprecatedTag.name} ${deprecatedTag.description}`.trim();
+  const reason = parseTagProperties<keyof DeprecatedReason>(text);
   if (reason.since && checkLibSupport(config.lib, [reason.since]).length > 0) {
-    return { inline: reason.inline };
+    return reason.inline ? { inline: reason.inline } : null;
   }
   return reason;
 }
