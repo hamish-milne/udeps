@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import type { namedTypes } from "ast-types";
+import { type Block, parse as docParse } from "comment-parser";
 import consola from "consola";
-import { type Annotation, parse as docParse } from "doctrine";
 import { parse as jsParse, print } from "recast";
 import * as typescriptParser from "recast/parsers/typescript.js";
 import { cGray, cInfo, cStrong } from "./colors.ts";
@@ -9,7 +9,7 @@ import { checkLibSupport, type UdepsConfig } from "./config.ts";
 
 export interface FunctionEntry {
   name: string;
-  doc: Annotation;
+  doc: Block;
   content: namedTypes.ExportNamedDeclaration;
   function: namedTypes.FunctionDeclaration;
 }
@@ -37,11 +37,15 @@ async function loadRegistry(path: string) {
       continue;
     }
     const funcName = node.declaration.id.name;
-    const doc = docParse(docComment.value, {
-      unwrap: true,
-      sloppy: true,
-      recoverable: true,
-    });
+    const [doc] = docParse(`/*${docComment.value}*/`);
+    if (!doc) {
+      consola.warn(
+        `No doc comment for function ${cInfo(funcName)} in registry ${cInfo(
+          path,
+        )}`,
+      );
+      continue;
+    }
     result.push({
       name: funcName,
       doc,
@@ -90,9 +94,8 @@ function parseTagProperties<T extends string>(str: string) {
 
 export function isEntrySupported(config: UdepsConfig, entry: FunctionEntry) {
   const requiredLibs = entry.doc.tags
-    .filter((tag) => tag.title === "requires")
-    .map((tag) => tag.name)
-    .filter<string>((x) => x != null);
+    .filter((tag) => tag.tag === "requires")
+    .map((tag) => tag.name);
   return checkLibSupport(config.lib, requiredLibs);
 }
 
@@ -100,15 +103,11 @@ export function isEntryObsolete(
   entry: FunctionEntry,
   config: UdepsConfig,
 ): DeprecatedReason | null {
-  const deprecatedTag = entry.doc.tags.find(
-    (tag) => tag.title === "deprecated",
-  );
-  if (!deprecatedTag || !deprecatedTag.description) {
+  const deprecatedTag = entry.doc.tags.find((tag) => tag.tag === "deprecated");
+  if (!deprecatedTag || !deprecatedTag.name) {
     return null;
   }
-  const reason = parseTagProperties<keyof DeprecatedReason>(
-    deprecatedTag.description,
-  );
+  const reason = parseTagProperties<keyof DeprecatedReason>(deprecatedTag.name);
   if (reason.since && checkLibSupport(config.lib, [reason.since]).length > 0) {
     return { inline: reason.inline };
   }

@@ -19,7 +19,7 @@ function entriesToList(entries: [FunctionEntry, DeprecatedReason | null][]) {
     .slice(0, MAX_RESULTS)
     .map(
       ([entry, reason]) =>
-        `- ${cStrong(entry.name)}: ${cGray(entry.doc.description.split("\n")[0])}${reason ? `\n${formatDeprecatedReason(entry, reason)}\n` : ""}`,
+        `- ${cStrong(entry.name)}: ${cGray(entry.doc.description.split(". ")[0])}${reason ? `\n${formatDeprecatedReason(entry, reason)}\n` : ""}`,
     )
     .join(
       "\n",
