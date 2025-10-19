@@ -30,7 +30,7 @@ export const add = defineCommand({
       for await (const [registry, entries] of loadRegistries(config)) {
         const candidate = entries.find((entry) => entry.name === name);
         if (!candidate) {
-          consola.verbose(`No implementation found in registry ${cInfo(name)}`);
+          consola.debug(`No implementation found in registry ${cInfo(name)}`);
           continue;
         }
         const unsupportedLibs = isEntrySupported(config, candidate);
@@ -53,7 +53,7 @@ export const add = defineCommand({
         const confirm =
           !reason ||
           (await consola.prompt(
-            `This implementation is obsolete. Are you sure you want to add it?`,
+            `This utility is not recommended. Really add it?`,
             { type: "confirm", initial: false },
           ));
         if (confirm) {

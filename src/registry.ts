@@ -1,4 +1,5 @@
 import { readFile } from "node:fs/promises";
+import { resolve } from "node:path";
 import type { namedTypes } from "ast-types";
 import { type Block, parse as docParse } from "comment-parser";
 import consola from "consola";
@@ -14,9 +15,26 @@ export interface FunctionEntry {
   function: namedTypes.FunctionDeclaration;
 }
 
-async function loadRegistry(path: string) {
+async function loadFileOrUrl(path: string, config: UdepsConfig) {
+  if (path.startsWith("http://") || path.startsWith("https://")) {
+    consola.debug(`Fetching registry from URL: ${cInfo(path)}`);
+    const response = await fetch(path);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch ${path}: ${response.statusText}`);
+    }
+    return await response.text();
+  } else if (path.match(/^(?:\.\.?)[/\\]/)) {
+    const fullPath = resolve(config.project, path);
+    consola.debug(`Loading registry from file: ${cInfo(fullPath)}`);
+    return await readFile(fullPath, "utf-8");
+  } else {
+    throw new Error(`Unsupported registry path: ${path}`);
+  }
+}
+
+async function loadRegistry(path: string, config: UdepsConfig) {
   const registrySource: namedTypes.File = jsParse(
-    await readFile(path, "utf-8"),
+    await loadFileOrUrl(path, config),
     {
       parser: typescriptParser,
     },
@@ -57,10 +75,9 @@ async function loadRegistry(path: string) {
 }
 
 export async function* loadRegistries(config: UdepsConfig) {
-  consola.verbose(`Supported libs: ${cInfo(config.lib.join(", "))}`);
+  consola.debug(`Supported libs: ${cInfo(config.lib.join(", "))}`);
   for (const registry of config.registry) {
-    consola.verbose(`Using registry: ${cInfo(registry)}`);
-    const registryObj = await loadRegistry(registry);
+    const registryObj = await loadRegistry(registry, config);
     yield [registry, registryObj] as const;
   }
 }

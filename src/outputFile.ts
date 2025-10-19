@@ -46,7 +46,7 @@ export function insertIntoFile(filePath: string, entry: FunctionEntry) {
     }
   }
   body.splice(i, 0, removeMetaDocTags(entry.content));
-  consola.verbose(`Writing changes to ${cInfo(filePath)}.`);
+  consola.debug(`Writing changes to ${cInfo(filePath)}.`);
   writeFileSync(filePath, print(fileAst).code);
 }
 
@@ -77,6 +77,6 @@ export function removeFromFile(filePath: string, names: string[]) {
       `Function ${cSuccess(name)} removed from ${cInfo(filePath)}`,
     );
   }
-  consola.verbose(`Writing changes to ${cInfo(filePath)}.`);
+  consola.debug(`Writing changes to ${cInfo(filePath)}.`);
   writeFileSync(filePath, print(fileAst).code);
 }

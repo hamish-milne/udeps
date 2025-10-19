@@ -44,7 +44,7 @@ export const search = defineCommand({
     const config = loadConfig();
     const allEntries: FunctionEntry[] = [];
     for await (const [registry, entries] of loadRegistries(config)) {
-      consola.verbose(
+      consola.debug(
         `Loaded ${cInfo(entries.length.toString())} entries from registry ${cInfo(registry)}`,
       );
       allEntries.push(...entries);

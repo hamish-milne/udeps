@@ -6,10 +6,11 @@ Output:
 Registry:
   ✔ Registry in separate subfolder @done(25-10-19 15:12)
   ✔ 0BSD license @done(25-10-19 15:12)
-  ☐ Fetch from URL or project-local path
+  ✔ Fetch from URL or project-local path @done(25-10-19 17:52)
   ✔ Replace doctrine with comment-parser @done(25-10-19 16:29)
   ☐ Properly check for nodejs/backend support
   ☐ Check and warn re. registry licenses
+  ☐ Add HTTP cache
 Admin:
   ☐ CI
   ☐ npm package
