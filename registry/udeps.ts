@@ -80,12 +80,18 @@ export function difference<T>(
 
 /**
  * Ensures the input is returned as an array.
- * @param input   Input value which can be a single item, an array, null, or undefined
- * @returns       An array containing the input value(s)
+ * @param input   Input value which can be a single item, an array, an iterable, null, or undefined
+ * @returns       An array containing the input value(s), or an empty array if input is nullish
  * @requires      ES5
  */
-export function forceArray<T>(input: T | T[] | null | undefined) {
-  return input == null ? [] : Array.isArray(input) ? input : [input];
+export function forceArray<T>(input: T | T[] | null | undefined | Iterable<T>) {
+  return input == null
+    ? []
+    : Array.isArray(input)
+      ? input
+      : typeof input === "object" && Symbol.iterator in input
+        ? Array.from(input)
+        : [input];
 }
 
 /**
@@ -97,6 +103,38 @@ export function forceArray<T>(input: T | T[] | null | undefined) {
  */
 export function getIterator<T>(iterable: Iterable<T>) {
   return iterable[Symbol.iterator]();
+}
+
+/**
+ * Decodes a hexadecimal string to a Uint8Array buffer.
+ * @param str   Hexadecimal string
+ * @returns     Decoded Uint8Array buffer
+ * @requires    ES2015.Core
+ * @deprecated  since=node, replace-with={@link Buffer.from}
+ * @deprecated  since=ESNext, replace-with={@link Uint8Array.fromHex}
+ */
+export function hexDecode(str: string): Uint8Array {
+  const result = new Uint8Array(str.length / 2);
+  for (let i = 0; i < str.length - 1; i += 2) {
+    result[i / 2] = parseInt(str.substring(i, i + 2), 16);
+  }
+  return result;
+}
+
+/**
+ * Encodes a Uint8Array buffer to a hexadecimal string.
+ * @param buffer   Uint8Array buffer to encode
+ * @returns        Hexadecimal string
+ * @requires       ES2015.Core
+ * @deprecated     since=node, replace-with={@link Buffer.prototype.toString}
+ * @deprecated     since=ESNext, replace-with={@link Uint8Array.toHex}
+ */
+export function hexEncode(buffer: Uint8Array): string {
+  let result = "";
+  for (let i = 0; i < buffer.length; i++) {
+    result += buffer[i].toString(16).padStart(2, "0");
+  }
+  return result;
 }
 
 /**
@@ -521,4 +559,16 @@ export function unwrapPrimitiveObject(value: unknown) {
     return value.valueOf();
   }
   return value;
+}
+
+/**
+ * Forces V8 to convert a string to a contiguous/flat representation.
+ * This can improve performance in certain scenarios, like JSON.stringify, but has an immediate cost as well.
+ * Be sure to benchmark before and after using this function!
+ * @param str   String to flatten
+ * @returns     The same string
+ */
+export function v8FlattenString(str: string): string {
+  Number(str);
+  return str;
 }

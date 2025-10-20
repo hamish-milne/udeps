@@ -11,7 +11,7 @@ Registry:
   ✔ Fetch from URL or project-local path @done(25-10-19 17:52)
   ✔ Replace doctrine with comment-parser @done(25-10-19 16:29)
   ☐ Properly check for nodejs/backend support
-  ☐ Check and warn re. registry licenses
+  ✔ Check and warn re. registry licenses @done(25-10-21 00:25)
   ☐ Add HTTP cache
 Admin:
   ☐ CI

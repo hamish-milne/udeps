@@ -39,6 +39,15 @@ async function loadRegistry(path: string, config: UdepsConfig) {
       parser: typescriptParser,
     },
   );
+  const firstComment = registrySource.program.body[0]?.comments?.[0];
+  if (
+    !firstComment?.value.match(/BSD Zero clause License|0BSD|public domain/i)
+  ) {
+    consola.warn({
+      message: `Unable to verify 0BSD license header in registry ${cInfo(path)}`,
+      additional: cGray(firstComment?.value || "<no header found>"),
+    });
+  }
   const result: FunctionEntry[] = [];
   for (const node of registrySource.program.body) {
     if (
