@@ -486,6 +486,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"json5@npm:^2.2.3":
+  version: 2.2.3
+  resolution: "json5@npm:2.2.3"
+  bin:
+    json5: lib/cli.js
+  checksum: 10c0/5a04eed94810fa55c5ea138b2f7a5c12b97c3750bc63d11e511dcecbfef758003861522a070c2272764ee0f4e3e323862f386945aeb5b85b87ee43f084ba586c
+  languageName: node
+  linkType: hard
+
 "package-directory@npm:^8.1.0":
   version: 8.1.0
   resolution: "package-directory@npm:8.1.0"
@@ -528,6 +537,7 @@ __metadata:
     consola: "npm:^3.4.2"
     esbuild: "npm:^0.25.11"
     fast-fuzzy: "npm:^1.12.0"
+    json5: "npm:^2.2.3"
     package-directory: "npm:^8.1.0"
     recast: "npm:^0.23.11"
     typescript: "npm:^5.9.3"

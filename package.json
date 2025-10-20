@@ -26,5 +26,8 @@
     "sdks": "yarn dlx @yarnpkg/sdks vscode",
     "run-ts": "node --require ./.pnp.cjs --experimental-loader ./.pnp.loader.mjs --experimental-strip-types",
     "build": "esbuild --bundle ./src/cli.ts --outfile=./dist/cli.cjs --sourcemap --platform=node --format=cjs --minify"
+  },
+  "dependencies": {
+    "json5": "^2.2.3"
   }
 }

@@ -1,6 +1,6 @@
 Config file:
   ☐ JSON Schema
-  ☐ Use JSON5 for tsconfig
+  ✔ Use JSON5 for tsconfig @done(25-10-20 16:25)
 Output:
   ✔ JS support, strip types @done(25-10-20 15:43)
 Registry:

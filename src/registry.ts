@@ -78,7 +78,10 @@ export async function* loadRegistries(config: UdepsConfig) {
   consola.debug(`Supported libs: ${cInfo(config.lib.join(", "))}`);
   for (const registry of config.registry) {
     const registryObj = await loadRegistry(registry, config);
-    yield [registry, registryObj] as const;
+    yield [
+      registry.split(/[\\/]/).at(-1)?.trim() || registry,
+      registryObj,
+    ] as const;
   }
 }
 
