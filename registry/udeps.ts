@@ -1,6 +1,30 @@
 // BSD Zero Clause License
 
 /**
+ * Decodes a base64-encoded string to a Uint8Array buffer. Works in both Node.js and browser environments.
+ * @param str   Base64-encoded string
+ * @returns     Decoded Uint8Array buffer
+ * @requires    ES2015.Core
+ * @deprecated  since=node, replace-with={@link Buffer.from}
+ * @deprecated  since=ESNext, replace-with={@link Uint8Array.fromBase64}
+ */
+export function base64Decode(str: string): Uint8Array {
+  return new TextEncoder().encode(atob(str));
+}
+
+/**
+ * Encodes a Uint8Array buffer to a base64-encoded string. Works in both Node.js and browser environments.
+ * @param buffer   Uint8Array buffer to encode
+ * @returns        Base64-encoded string
+ * @requires       ES2015.Core
+ * @deprecated     since=node, replace-with={@link Buffer.prototype.toString}
+ * @deprecated     since=ESNext, replace-with={@link Uint8Array.toBase64}
+ */
+export function base64Encode(buffer: Uint8Array): string {
+  return btoa(new TextDecoder().decode(buffer));
+}
+
+/**
  * Splits an array into chunks of a specified size.
  * @param input  Array to be chunked
  * @param size   Maximum size of each chunk
@@ -19,18 +43,13 @@ export function chunk<T>(input: readonly T[], size: number) {
 }
 
 /**
- * Compares two values for equality using the SameValueZero algorithm.
- * This is the algorithm used by {@link Array.prototype.includes}, {@link Map}, and {@link Set}.
- * @param x   First value
- * @param y   Second value
- * @returns   True if values are equal, false otherwise
+ * Joins CSS class names into a single string, ignoring falsy values.
+ * @param classes   Array of class names (strings) or falsy values
+ * @returns         Joined class names as a single string
+ * @requires        ES5
  */
-export function sameValueZero(x: unknown, y: unknown) {
-  return (
-    x === y ||
-    // biome-ignore lint/suspicious/noSelfCompare: checking for NaN
-    (typeof x === "number" && typeof y === "number" && x !== x && y !== y)
-  );
+export function classJoin(...classes: (string | false | null | undefined)[]) {
+  return classes.filter(Boolean).join(" ");
 }
 
 /**
@@ -60,90 +79,6 @@ export function difference<T>(
 }
 
 /**
- * Returns the intersection of multiple arrays.
- * @param first  First array
- * @param rest   Other arrays
- * @returns      Array of items present in all arrays
- * @requires     ES5
- * @requires     ES2016.Array.Include
- */
-export function intersection<T>(first: readonly T[], ...rest: readonly T[][]) {
-  return first.filter((item) => rest.every((arr) => arr.includes(item)));
-}
-
-/**
- * Returns the minimum item in an array based on a selector function.
- * @param arr       Array to search
- * @param selector  Function to select the value to compare
- * @returns         Minimum item or undefined if array is empty
- * @requires        ES5
- */
-export function minBy<T>(arr: readonly T[], selector: (item: T) => number) {
-  return arr.reduce<T | undefined>(
-    (minItem, currentItem) =>
-      minItem === undefined || selector(currentItem) < selector(minItem)
-        ? currentItem
-        : minItem,
-    undefined,
-  );
-}
-
-/**
- * Returns the maximum item in an array based on a selector function.
- * @param arr       Array to search
- * @param selector  Function to select the value to compare
- * @returns         Maximum item or undefined if array is empty
- * @requires        ES5
- */
-export function maxBy<T>(arr: readonly T[], selector: (item: T) => number) {
-  return arr.reduce<T | undefined>(
-    (maxItem, currentItem) =>
-      maxItem === undefined || selector(currentItem) > selector(maxItem)
-        ? currentItem
-        : maxItem,
-    undefined,
-  );
-}
-
-/**
- * Creates a new object by picking specified keys from the original object.
- * @param obj    Original object
- * @param keys   Keys to pick
- * @returns      New object with picked keys
- * @requires     ES5
- * @requires     ES2016.Array.Include
- * @requires     ES2017.Object
- * @requires     ES2019.Object
- */
-export function pick<T extends object, K extends keyof T>(
-  obj: T,
-  keys: readonly K[],
-) {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => keys.includes(key as K)),
-  ) as Pick<T, K>;
-}
-
-/**
- * Creates a new object by omitting specified keys from the original object.
- * @param obj    Original object
- * @param keys   Keys to omit
- * @returns      New object without omitted keys
- * @requires     ES5
- * @requires     ES2016.Array.Include
- * @requires     ES2017.Object
- * @requires     ES2019.Object
- */
-export function omit<T extends object, K extends keyof T>(
-  obj: T,
-  keys: readonly K[],
-) {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([key]) => !keys.includes(key as K)),
-  ) as Omit<T, K>;
-}
-
-/**
  * Ensures the input is returned as an array.
  * @param input   Input value which can be a single item, an array, null, or undefined
  * @returns       An array containing the input value(s)
@@ -165,52 +100,62 @@ export function getIterator<T>(iterable: Iterable<T>) {
 }
 
 /**
- * Sets the toStringTag of an object.
- * @param target  The target object
- * @param value   The toStringTag value to set
- * @requires      ES2015.Symbol.WellKnown
+ * Checks if an array includes a specific item (except `NaN`).
+ * @param arr   Array to check
+ * @param item  Item to find
+ * @returns     True if item is found, false otherwise
+ * @deprecated  since=ES2016.Array.Include, replace-with={@link Array.prototype.includes}, inline=consider
  */
-export function setToStringTag(target: object, value: string) {
-  Object.defineProperty(target, Symbol.toStringTag, {
-    value,
-    configurable: true,
-  });
+export function includes<T>(arr: readonly T[], item: T) {
+  return arr.indexOf(item) !== -1;
 }
 
 /**
- * Maps the values of an object using a provided function.
- * @param obj   The object to map
- * @param fn    The mapping function
- * @returns     A new object with mapped values
- * @requires    ES5
- * @requires    ES2017.Object
- * @requires    ES2019.Object
+ * Returns the intersection of multiple arrays.
+ * @param first  First array
+ * @param rest   Other arrays
+ * @returns      Array of items present in all arrays
+ * @requires     ES5
+ * @requires     ES2016.Array.Include
  */
-export function objectMap<T extends object, U>(
-  obj: T,
-  fn: (key: keyof T, value: T[keyof T]) => U,
-) {
-  return Object.fromEntries(
-    Object.entries(obj).map(([key, value]) => [key, fn(key as keyof T, value)]),
-  ) as { [K in keyof T]: U };
+export function intersection<T>(first: readonly T[], ...rest: readonly T[][]) {
+  return first.filter((item) => rest.every((arr) => arr.includes(item)));
 }
 
 /**
- * Filters the entries of an object based on a provided predicate function.
- * @param obj   The object to filter
- * @param fn    The predicate function
- * @returns     A new object with filtered entries
- * @requires    ES5
- * @requires    ES2017.Object
- * @requires    ES2019.Object
+ * Checks if a value is array-like (i.e., has a numeric length property).
+ * @param value   Value to check
+ * @returns       True if value is array-like, false otherwise
  */
-export function objectFilter<T extends object, U extends keyof T>(
-  obj: T,
-  fn: (key: keyof T, value: T[keyof T]) => key is U,
-) {
-  return Object.fromEntries(
-    Object.entries(obj).filter(([key, value]) => fn(key as keyof T, value)),
-  ) as Pick<T, U>;
+export function isArrayLike(value: unknown): value is ArrayLike<unknown> {
+  return (
+    Array.isArray(value) ||
+    (typeof value === "object" &&
+      value !== null &&
+      "length" in value &&
+      typeof value.length === "number")
+  );
+}
+
+/**
+ * Checks if a value is a boolean.
+ * Note that this does not account for wrapper objects or cross-realm values, both of which are extremely rare in practice.
+ * @param value   Value to check
+ * @returns       True if value is a boolean, false otherwise
+ * @deprecated    inline=recommend
+ */
+export function isBoolean(value: unknown): value is boolean {
+  return typeof value === "boolean";
+}
+
+/**
+ * Checks if the current environment is a Continuous Integration (CI) environment.
+ * @returns      True if in CI environment, false otherwise
+ * @deprecated   inline=consider
+ * @requires     node:process
+ */
+export function isCI() {
+  return Boolean(process.env.CI);
 }
 
 /**
@@ -224,13 +169,13 @@ export function isEven(num: number) {
 }
 
 /**
- * Checks if a number is odd.
- * @param num    Number to check
- * @returns      True if odd, false otherwise
- * @deprecated   inline=consider
+ * Checks if a number is an integer.
+ * @param value   Number to check
+ * @returns       True if number is an integer, false otherwise
+ * @deprecated    inline=consider, since=ES2015.Core, replace-with={@link Number.isInteger}
  */
-export function isOdd(num: number) {
-  return num % 2 !== 0;
+export function isInteger(num: number): boolean {
+  return num % 1 === 0;
 }
 
 /**
@@ -252,27 +197,6 @@ export function isNegative(num: number) {
  */
 export function isNegativeZero(num: number) {
   return Object.is(num, -0);
-}
-
-/**
- * Checks if a number is exactly positive zero.
- * @param num    Number to check
- * @returns      True if positive zero, false otherwise
- * @deprecated   inline=consider
- * @requires     ES2015.Core
- */
-export function isPositiveZero(num: number) {
-  return Object.is(num, 0);
-}
-
-/**
- * Checks if the current environment is a Continuous Integration (CI) environment.
- * @returns      True if in CI environment, false otherwise
- * @deprecated   inline=consider
- * @requires     node:process
- */
-export function isCI() {
-  return Boolean(process.env.CI);
 }
 
 /**
@@ -299,6 +223,16 @@ export function isNumber(value: unknown): value is number {
 }
 
 /**
+ * Checks if a number is odd.
+ * @param num    Number to check
+ * @returns      True if odd, false otherwise
+ * @deprecated   inline=consider
+ */
+export function isOdd(num: number) {
+  return num % 2 !== 0;
+}
+
+/**
  * Checks if a value is a plain object (i.e., not an array, function, or instance of a class).
  * @param value   Value to check
  * @returns       True if value is a plain object, false otherwise
@@ -310,6 +244,215 @@ export function isPlainObject(value: unknown): value is object {
     return proto === Object.prototype || proto === null;
   }
   return false;
+}
+
+/**
+ * Checks if a number is exactly positive zero.
+ * @param num    Number to check
+ * @returns      True if positive zero, false otherwise
+ * @deprecated   inline=consider
+ * @requires     ES2015.Core
+ */
+export function isPositiveZero(num: number) {
+  return Object.is(num, 0);
+}
+
+/**
+ * Checks if a value is a string.
+ * Note that this does not account for wrapper objects or cross-realm values, both of which are extremely rare in practice.
+ * @param value   Value to check
+ * @returns       True if value is a string, false otherwise
+ * @deprecated    inline=recommend
+ */
+export function isString(value: unknown): value is string {
+  return typeof value === "string";
+}
+
+/**
+ * Returns the maximum item in an array based on a selector function.
+ * @param arr       Array to search
+ * @param selector  Function to select the value to compare
+ * @returns         Maximum item or undefined if array is empty
+ * @requires        ES5
+ */
+export function maxBy<T>(arr: readonly T[], selector: (item: T) => number) {
+  return arr.reduce<T | undefined>(
+    (maxItem, currentItem) =>
+      maxItem === undefined || selector(currentItem) > selector(maxItem)
+        ? currentItem
+        : maxItem,
+    undefined,
+  );
+}
+
+/**
+ * Returns the minimum item in an array based on a selector function.
+ * @param arr       Array to search
+ * @param selector  Function to select the value to compare
+ * @returns         Minimum item or undefined if array is empty
+ * @requires        ES5
+ */
+export function minBy<T>(arr: readonly T[], selector: (item: T) => number) {
+  return arr.reduce<T | undefined>(
+    (minItem, currentItem) =>
+      minItem === undefined || selector(currentItem) < selector(minItem)
+        ? currentItem
+        : minItem,
+    undefined,
+  );
+}
+
+/**
+ * Returns the entries of an object as an array of key-value pairs.
+ * @param obj   Object to get entries from
+ * @returns     Array of key-value pairs
+ * @requires    ES5
+ * @deprecated  since=ES2017.Object, replace-with={@link Object.entries}
+ */
+export function objectEntries<T>(obj: { [s: string]: T }) {
+  return Object.keys(obj).map<[string, T]>((key) => [key, obj[key]]);
+}
+
+/**
+ * Filters the entries of an object based on a provided predicate function.
+ * @param obj   The object to filter
+ * @param fn    The predicate function
+ * @returns     A new object with filtered entries
+ * @requires    ES5
+ * @requires    ES2017.Object
+ * @requires    ES2019.Object
+ */
+export function objectFilter<T extends object, U extends keyof T>(
+  obj: T,
+  fn: (key: keyof T, value: T[keyof T]) => key is U,
+) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key, value]) => fn(key as keyof T, value)),
+  ) as Pick<T, U>;
+}
+
+/**
+ * Creates an object from an array of key-value pairs.
+ * @param entries   Array of key-value pairs
+ * @returns         Object created from entries
+ * @requires        ES5
+ * @deprecated      since=ES2019.Object, replace-with={@link Object.fromEntries}
+ */
+export function objectFromEntries<K extends string | number | symbol, V>(
+  entries: readonly (readonly [K, V])[],
+) {
+  const obj = {} as { [key in K]: V };
+  for (const [key, value] of entries) {
+    obj[key] = value;
+  }
+  return obj;
+}
+
+/**
+ * Checks if an object has a specific property as its own (not inherited) property.
+ * @param obj    Object to check
+ * @param prop   Property name to check
+ * @returns      True if property exists on object, false otherwise
+ * @deprecated   since=ES2022.Object, replace-with={@link Object.hasOwn}, inline=consider
+ */
+export function objectHasOwn(obj: object, prop: string | symbol) {
+  // biome-ignore lint/suspicious/noPrototypeBuiltins: legacy utility function
+  return Object.prototype.hasOwnProperty.call(obj, prop);
+}
+
+/**
+ * Maps the values of an object using a provided function.
+ * @param obj   The object to map
+ * @param fn    The mapping function
+ * @returns     A new object with mapped values
+ * @requires    ES5
+ * @requires    ES2017.Object
+ * @requires    ES2019.Object
+ */
+export function objectMap<T extends object, U>(
+  obj: T,
+  fn: (key: keyof T, value: T[keyof T]) => U,
+) {
+  return Object.fromEntries(
+    Object.entries(obj).map(([key, value]) => [key, fn(key as keyof T, value)]),
+  ) as { [K in keyof T]: U };
+}
+
+/**
+ * Returns the values of an object as an array.
+ * @param obj   Object to get values from
+ * @returns     Array of values
+ * @requires    ES5
+ * @deprecated  since=ES2017.Object, replace-with={@link Object.values}, inline=consider
+ */
+export function objectValues<T>(obj: { [s: string]: T }) {
+  return Object.keys(obj).map((key) => obj[key]);
+}
+
+/**
+ * Creates a new object by omitting specified keys from the original object.
+ * @param obj    Original object
+ * @param keys   Keys to omit
+ * @returns      New object without omitted keys
+ * @requires     ES5
+ * @requires     ES2016.Array.Include
+ * @requires     ES2017.Object
+ * @requires     ES2019.Object
+ */
+export function omit<T extends object, K extends keyof T>(
+  obj: T,
+  keys: readonly K[],
+) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => !keys.includes(key as K)),
+  ) as Omit<T, K>;
+}
+
+/**
+ * Creates a new object by picking specified keys from the original object.
+ * @param obj    Original object
+ * @param keys   Keys to pick
+ * @returns      New object with picked keys
+ * @requires     ES5
+ * @requires     ES2016.Array.Include
+ * @requires     ES2017.Object
+ * @requires     ES2019.Object
+ */
+export function pick<T extends object, K extends keyof T>(
+  obj: T,
+  keys: readonly K[],
+) {
+  return Object.fromEntries(
+    Object.entries(obj).filter(([key]) => keys.includes(key as K)),
+  ) as Pick<T, K>;
+}
+
+/**
+ * Compares two values for equality using the SameValueZero algorithm.
+ * This is the algorithm used by {@link Array.prototype.includes}, {@link Map}, and {@link Set}.
+ * @param x   First value
+ * @param y   Second value
+ * @returns   True if values are equal, false otherwise
+ */
+export function sameValueZero(x: unknown, y: unknown) {
+  return (
+    x === y ||
+    // biome-ignore lint/suspicious/noSelfCompare: checking for NaN
+    (typeof x === "number" && typeof y === "number" && x !== x && y !== y)
+  );
+}
+
+/**
+ * Sets the toStringTag of an object.
+ * @param target  The target object
+ * @param value   The toStringTag value to set
+ * @requires      ES2015.Symbol.WellKnown
+ */
+export function setToStringTag(target: object, value: string) {
+  Object.defineProperty(target, Symbol.toStringTag, {
+    value,
+    configurable: true,
+  });
 }
 
 /**
@@ -333,6 +476,24 @@ export function splitLines(input: string) {
 }
 
 /**
+ * Replaces all occurrences of a substring in a string with a new substring.
+ * If the searchValue is a RegExp, you should use {@link String.prototype.replace} with the global flag instead.
+ * @param str           Original string
+ * @param searchValue   Substring to search for
+ * @param replaceValue  Substring to replace with
+ * @returns             New string with replacements
+ * @requires            ES5
+ * @deprecated          since=ES2021.String, replace-with={@link String.prototype.replaceAll}
+ */
+export function stringReplaceAll(
+  str: string,
+  searchValue: string,
+  replaceValue: string,
+) {
+  return str.split(searchValue).join(replaceValue);
+}
+
+/**
  * Returns a new array with duplicate values removed.
  * @param input   Array to process
  * @returns       Array with unique values
@@ -342,16 +503,6 @@ export function splitLines(input: string) {
  */
 export function unique<T>(input: readonly T[]) {
   return Array.from(new Set(input));
-}
-
-/**
- * Joins CSS class names into a single string, ignoring falsy values.
- * @param classes   Array of class names (strings) or falsy values
- * @returns         Joined class names as a single string
- * @requires        ES5
- */
-export function classJoin(...classes: (string | false | null | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
 }
 
 /**
@@ -370,51 +521,4 @@ export function unwrapPrimitiveObject(value: unknown) {
     return value.valueOf();
   }
   return value;
-}
-
-/**
- * Checks if a value is a boolean.
- * Note that this does not account for wrapper objects or cross-realm values, both of which are extremely rare in practice.
- * @param value   Value to check
- * @returns       True if value is a boolean, false otherwise
- * @deprecated    inline=recommend
- */
-export function isBoolean(value: unknown): value is boolean {
-  return typeof value === "boolean";
-}
-
-/**
- * Checks if a value is a string.
- * Note that this does not account for wrapper objects or cross-realm values, both of which are extremely rare in practice.
- * @param value   Value to check
- * @returns       True if value is a string, false otherwise
- * @deprecated    inline=recommend
- */
-export function isString(value: unknown): value is string {
-  return typeof value === "string";
-}
-
-/**
- * Checks if a value is array-like (i.e., has a numeric length property).
- * @param value   Value to check
- * @returns       True if value is array-like, false otherwise
- */
-export function isArrayLike(value: unknown): value is ArrayLike<unknown> {
-  return (
-    Array.isArray(value) ||
-    (typeof value === "object" &&
-      value !== null &&
-      "length" in value &&
-      typeof value.length === "number")
-  );
-}
-
-/**
- * Checks if a number is an integer.
- * @param value   Number to check
- * @returns       True if number is an integer, false otherwise
- * @deprecated    inline=consider, since=ES2015.Core, replace-with={@link Number.isInteger}
- */
-export function isInteger(num: number): boolean {
-  return num % 1 === 0;
 }

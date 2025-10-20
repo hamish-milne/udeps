@@ -3,6 +3,8 @@ Config file:
   ✔ Use JSON5 for tsconfig @done(25-10-20 16:25)
 Output:
   ✔ JS support, strip types @done(25-10-20 15:43)
+  ☐ Postprocess with a formatter
+  ☐ Support output to individual files
 Registry:
   ✔ Registry in separate subfolder @done(25-10-19 15:12)
   ✔ 0BSD license @done(25-10-19 15:12)
