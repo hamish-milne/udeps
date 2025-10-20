@@ -2,7 +2,7 @@ Config file:
   ☐ JSON Schema
   ☐ Use JSON5 for tsconfig
 Output:
-  ☐ JS support, strip types
+  ✔ JS support, strip types @done(25-10-20 15:43)
 Registry:
   ✔ Registry in separate subfolder @done(25-10-19 15:12)
   ✔ 0BSD license @done(25-10-19 15:12)

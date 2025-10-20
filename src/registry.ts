@@ -1,6 +1,6 @@
 import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
-import type { namedTypes } from "ast-types";
+import { type ASTNode, type namedTypes, visit } from "ast-types";
 import { type Block, parse as docParse } from "comment-parser";
 import consola from "consola";
 import { parse as jsParse, print } from "recast";
@@ -54,7 +54,7 @@ async function loadRegistry(path: string, config: UdepsConfig) {
     if (!docComment) {
       continue;
     }
-    const funcName = node.declaration.id.name;
+    const funcName = node.declaration.id.name.toString();
     const [doc] = docParse(`/*${docComment.value}*/`);
     if (!doc) {
       consola.warn(
@@ -159,7 +159,32 @@ export function printInline(entry: FunctionEntry) {
     body[0].type === "ReturnStatement" &&
     body[0].argument
   ) {
-    return print(body[0].argument).code;
+    return print(stripTypes(body[0].argument)).code;
   }
   return null;
+}
+
+export function stripTypes<T extends ASTNode>(node: T): T {
+  return visit(node, {
+    visitTSTypeAnnotation(path) {
+      path.prune();
+      return false;
+    },
+    visitTSParameterProperty(path) {
+      path.replace(path.node.parameter);
+      this.traverse(path);
+    },
+    visitTSAsExpression(path) {
+      path.replace(path.node.expression);
+      this.traverse(path);
+    },
+    visitTSTypeAssertion(path) {
+      path.replace(path.node.expression);
+      this.traverse(path);
+    },
+    visitTSTypeParameterDeclaration(path) {
+      path.prune();
+      return false;
+    },
+  });
 }

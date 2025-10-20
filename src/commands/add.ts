@@ -28,7 +28,9 @@ export const add = defineCommand({
       const config = loadConfig();
       let found = false;
       for await (const [registry, entries] of loadRegistries(config)) {
-        const candidate = entries.find((entry) => entry.name === name);
+        const candidate = entries.find(
+          (entry) => entry.name.localeCompare(name) === 0,
+        );
         if (!candidate) {
           consola.debug(`No implementation found in registry ${cInfo(name)}`);
           continue;
