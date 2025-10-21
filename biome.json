@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": true,
-    "includes": ["src/**/*.ts", "registry/**/*.ts"]
+    "includes": ["vitest.config.ts", "src/**/*.ts", "registry/**/*.ts"]
   },
   "formatter": {
     "enabled": true,

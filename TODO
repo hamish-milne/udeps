@@ -14,7 +14,7 @@ Registry:
   ✔ Check and warn re. registry licenses @done(25-10-21 00:25)
   ☐ Add HTTP cache
 Admin:
-  ☐ CI
+  ✔ CI @done(25-10-21 12:44)
   ☐ npm package
   ☐ Unit testing
   ☐ Coverage badges

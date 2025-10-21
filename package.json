@@ -9,6 +9,7 @@
     "@babel/parser": "^7.28.4",
     "@biomejs/biome": "^2.2.6",
     "@types/node": "^18.19.130",
+    "@vitest/coverage-v8": "^3.2.4",
     "ast-types": "^0.16.1",
     "citty": "^0.1.6",
     "comment-parser": "^1.4.1",
@@ -27,6 +28,7 @@
   "scripts": {
     "sdks": "yarn dlx @yarnpkg/sdks vscode",
     "run-ts": "node --require ./.pnp.cjs --experimental-loader ./.pnp.loader.mjs --experimental-strip-types",
-    "build": "esbuild --bundle ./src/cli.ts --outfile=./dist/cli.cjs --sourcemap --platform=node --format=cjs --minify"
+    "build": "esbuild --bundle ./src/cli.ts --outfile=./dist/cli.cjs --sourcemap --platform=node --format=cjs --minify",
+    "test": "vitest run"
   }
 }
