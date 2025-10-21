@@ -5,7 +5,7 @@ import { type Block, parse as docParse } from "comment-parser";
 import consola from "consola";
 import { parse as jsParse, print } from "recast";
 import * as typescriptParser from "recast/parsers/typescript.js";
-import { cGray, cInfo, cStrong } from "./colors.ts";
+import { cGray, cInfo, cStrong, cWarning } from "./colors.ts";
 import { checkLibSupport, type UdepsConfig } from "./config.ts";
 
 export interface FunctionEntry {
@@ -39,14 +39,22 @@ async function loadRegistry(path: string, config: UdepsConfig) {
       parser: typescriptParser,
     },
   );
-  const firstComment = registrySource.program.body[0]?.comments?.[0];
+  const [firstComment] = docParse(
+    `/*${registrySource.program.body[0]?.comments?.[0]?.value || ""}*/`,
+  );
+  const license = firstComment?.tags.find((tag) => tag.tag === "license");
+  const licenseText =
+    `${license?.name || ""} ${license?.description || ""}`.trim();
   if (
-    !firstComment?.value.match(/BSD Zero clause License|0BSD|public domain/i)
+    licenseText.match(
+      /(?:^0BSD$)|(?:^BSD Zero Clause License$)|(?:public domain)/i,
+    )
   ) {
-    consola.warn({
-      message: `Unable to verify 0BSD license header in registry ${cInfo(path)}`,
-      additional: cGray(firstComment?.value || "<no header found>"),
-    });
+    consola.debug(`Verified ${cInfo(licenseText)} in registry ${cInfo(path)}`);
+  } else {
+    consola.warn(
+      `Ensure you are compliant with license ${cWarning(licenseText || "<unknown>")} in registry ${cInfo(path)}`,
+    );
   }
   const result: FunctionEntry[] = [];
   for (const node of registrySource.program.body) {

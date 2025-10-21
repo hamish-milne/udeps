@@ -38,8 +38,8 @@ const defaultConfig: UdepsConfig = {
   outputFile: "udeps.ts",
   lib: ["es2020"],
   registry: [
-    `https://raw.githubusercontent.com/hamish-milne/udeps/refs/heads/master/registry/udeps.ts`,
-    `https://raw.githubusercontent.com/hamish-milne/udeps/refs/heads/master/registry/udeps-legacy.ts`,
+    `https://raw.githubusercontent.com/hamish-milne/udeps/refs/heads/master/registry/main.ts`,
+    `https://raw.githubusercontent.com/hamish-milne/udeps/refs/heads/master/registry/compat.ts`,
   ],
 };
 

@@ -19,4 +19,4 @@ The CLI tool is licensed under the [MIT License](./LICENSE). The registry code i
 
 Registry micro-dependencies are straightforward expressions of obvious concepts that we consider fundamentally uncopyrightable. The 0BSD license is functionally equivalent to a public domain dedication while avoiding legal complications and organizational policies relating to public domain software.
 
-You are responsible for complying with the license terms of third-party registries in your configuration. The CLI will warn you if it doesn't detect 'BSD Zero Clause License', '0BSD License', or 'public domain' in a registry file's first comment block, but it does not verify licenses comprehensively.
+You are responsible for complying with the license terms of third-party registries in your configuration. The CLI will warn you if it doesn't detect 'BSD Zero Clause License', '0BSD', or 'public domain' in a registry file's `@license` tag, but it does not verify licenses comprehensively.

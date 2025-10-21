@@ -1,4 +1,8 @@
-// BSD Zero Clause License
+/**
+ * Main udeps registry
+ * @module udeps/registry/main
+ * @license 0BSD
+ */
 
 /**
  * Decodes a base64-encoded string to a Uint8Array buffer. Cross-platform, but significantly slower than the Node.js Buffer API.
@@ -195,6 +199,17 @@ export function intersection<T>(first: readonly T[], ...rest: readonly T[][]) {
 }
 
 /**
+ * Checks if the current environment is Android.
+ * As with all user agent checks, this is not 100% reliable, but should work in most cases.
+ * Consider using feature detection where possible.
+ * @returns      True if Android, false otherwise
+ * @requires     DOM
+ */
+export function isAndroid() {
+  return navigator.userAgent.match(/Android/i) != null;
+}
+
+/**
  * Checks if a value is array-like (i.e., has a numeric length property).
  * @param value   Value to check
  * @returns       True if value is array-like, false otherwise
@@ -248,6 +263,17 @@ export function isEven(num: number) {
  */
 export function isInteger(num: number): boolean {
   return num % 1 === 0;
+}
+
+/**
+ * Checks if the current environment is iOS.
+ * As with all user agent checks, this is not 100% reliable, but should work in most cases.
+ * Consider using feature detection where possible.
+ * @returns      True if iOS, false otherwise
+ * @requires     DOM
+ */
+export function isIOS() {
+  return navigator.userAgent.match(/iPhone|iPad|iPod/i) != null;
 }
 
 /**
@@ -341,6 +367,16 @@ export function isString(value: unknown): value is string {
 }
 
 /**
+ * Checks if the current device supports touch input.
+ * This is a reasonable heuristic for detecting mobile or tablet devices, but may not be 100% accurate.
+ * @returns      True if touch device, false otherwise
+ * @requires     DOM
+ */
+export function isTouchDevice() {
+  return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+}
+
+/**
  * Returns the maximum item in an array based on a selector function.
  * @param arr       Array to search
  * @param selector  Function to select the value to compare
@@ -348,12 +384,8 @@ export function isString(value: unknown): value is string {
  * @requires        ES5
  */
 export function maxBy<T>(arr: readonly T[], selector: (item: T) => number) {
-  return arr.reduce<T | undefined>(
-    (maxItem, currentItem) =>
-      maxItem === undefined || selector(currentItem) > selector(maxItem)
-        ? currentItem
-        : maxItem,
-    undefined,
+  return arr.reduce((maxItem, currentItem) =>
+    selector(currentItem) > selector(maxItem) ? currentItem : maxItem,
   );
 }
 
@@ -365,12 +397,8 @@ export function maxBy<T>(arr: readonly T[], selector: (item: T) => number) {
  * @requires        ES5
  */
 export function minBy<T>(arr: readonly T[], selector: (item: T) => number) {
-  return arr.reduce<T | undefined>(
-    (minItem, currentItem) =>
-      minItem === undefined || selector(currentItem) < selector(minItem)
-        ? currentItem
-        : minItem,
-    undefined,
+  return arr.reduce((minItem, currentItem) =>
+    selector(currentItem) < selector(minItem) ? currentItem : minItem,
   );
 }
 

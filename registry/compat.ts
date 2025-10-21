@@ -1,4 +1,8 @@
-// BSD Zero Clause License
+/**
+ * Compatibility udeps registry for older runtimes
+ * @module udeps/registry/compat
+ * @license 0BSD
+ */
 
 /**
  * Filters the entries of an object based on a provided predicate function.

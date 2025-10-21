@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import * as udeps from "./udeps.js";
+import * as udeps from "./main.js";
 
 test("base64", () => {
   const input = new Uint8Array(Array(0x100).keys());
