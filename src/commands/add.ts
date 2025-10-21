@@ -29,7 +29,7 @@ export const add = defineCommand({
       let found = false;
       for await (const [registry, entries] of loadRegistries(config)) {
         const candidate = entries.find(
-          (entry) => entry.name.localeCompare(name) === 0,
+          (entry) => entry.name.toLowerCase() === name.toLowerCase(),
         );
         if (!candidate) {
           consola.debug(`No implementation found in registry ${cInfo(name)}`);
@@ -38,7 +38,7 @@ export const add = defineCommand({
         const unsupportedLibs = isEntrySupported(config, candidate);
         if (unsupportedLibs.length > 0) {
           consola.info(
-            `The implementation in registry ${cInfo(registry)} requires unsupported libs: ${cWarning(
+            `The implementation of ${cInfo(candidate.name)} in registry ${cInfo(registry)} requires unsupported libs: ${cWarning(
               unsupportedLibs.join(", "),
             )}`,
           );
@@ -47,7 +47,7 @@ export const add = defineCommand({
         found = true;
         const reason = isEntryObsolete(candidate, config);
         consola.success({
-          message: `Supported implementation of ${cSuccess(name)} found in registry ${cInfo(registry)}`,
+          message: `Supported implementation of ${cSuccess(candidate.name)} found in registry ${cInfo(registry)}`,
           additional: reason
             ? formatDeprecatedReason(candidate, reason)
             : undefined,

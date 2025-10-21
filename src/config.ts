@@ -3,7 +3,7 @@ import { resolve } from "node:path";
 import consola from "consola";
 import { parse as json5parse } from "json5";
 import { packageDirectorySync } from "package-directory";
-import { cError, cInfo } from "./colors.ts";
+import { cInfo } from "./colors.ts";
 
 export interface UdepsConfig {
   project: string;
@@ -29,8 +29,7 @@ function getEsVersionIndex(esVersion: string) {
       return year - 2015 + 6;
     }
   }
-  consola.error(`Invalid ES version: ${cError(esVersion)}`);
-  return -1;
+  return null;
 }
 
 const defaultConfig: UdepsConfig = {
@@ -77,12 +76,14 @@ export function checkLibSupport(
   requiredLib: string[],
 ): string[] {
   const targetEsVersion = Math.max(
-    ...targetLib.filter((x) => !x.includes(".")).map(getEsVersionIndex),
+    ...targetLib
+      .filter((x) => !x.includes("."))
+      .map((x) => getEsVersionIndex(x) ?? 0),
   );
   const targetSet = targetLib.map((l) => l.toLowerCase());
   return requiredLib.filter(
     (lib) =>
-      getEsVersionIndex(lib) > targetEsVersion &&
+      (getEsVersionIndex(lib) ?? Infinity) > targetEsVersion &&
       !targetSet.includes(lib.toLowerCase()),
   );
 }
