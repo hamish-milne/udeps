@@ -2,59 +2,40 @@
 
 /**
  * Decodes a base64-encoded string to a Uint8Array buffer. Cross-platform, but significantly slower than the Node.js Buffer API.
- * This implementation uses {@link atob} and {@link TextEncoder} for the best possible performance.
  * @param str   Base64-encoded string
  * @returns     Decoded Uint8Array buffer
- * @requires    ES2015
+ * @requires    ES5
  * @deprecated  since=node, replace-with={@link Buffer.from}
  * @deprecated  since=ESNext, replace-with={@link Uint8Array.fromBase64}
  */
 export function base64Decode(str: string): Uint8Array {
   const raw = atob(str);
-  const asUtf8 = new TextEncoder().encode(raw);
-  let j = 0;
-  // Convert UTF-8 bytes to "Latin-1"
-  for (let i = 0; i < asUtf8.length; i++) {
-    switch (asUtf8[i]) {
-      case 0xc2:
-        break;
-      case 0xc3:
-        asUtf8[j++] = asUtf8[++i] + 0x40;
-        break;
-      default:
-        asUtf8[j++] = asUtf8[i];
-        break;
-    }
+  const result = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) {
+    result[i] = raw.charCodeAt(i);
   }
-  return asUtf8.subarray(0, j);
+  return result;
 }
 
 /**
  * Encodes a Uint8Array buffer to a base64-encoded string. Cross-platform, but significantly slower than the Node.js Buffer API.
- * This implementation uses {@link btoa} and {@link TextDecoder} for the best possible performance.
  * @param buffer   Uint8Array buffer to encode
  * @returns        Base64-encoded string
- * @requires       ES2015
+ * @requires       ES5
  * @deprecated     since=node, replace-with={@link Buffer.prototype.toString}
  * @deprecated     since=ESNext, replace-with={@link Uint8Array.toBase64}
  */
 export function base64Encode(buffer: Uint8Array): string {
-  const asUtf8 = new Uint8Array(buffer.length * 2);
-  let j = 0;
-  // Convert "Latin-1" bytes to UTF-8
-  for (let i = 0; i < buffer.length; i++) {
-    const byte = buffer[i];
-    if (byte < 0x80) {
-      asUtf8[j++] = byte;
-    } else if (byte < 0xc0) {
-      asUtf8[j++] = 0xc2;
-      asUtf8[j++] = byte;
-    } else {
-      asUtf8[j++] = 0xc3;
-      asUtf8[j++] = byte - 0x40;
-    }
+  let str = "";
+  const CHUNK_SIZE = 1024;
+  let i = 0;
+  for (; i < buffer.length; i += CHUNK_SIZE) {
+    str += String.fromCharCode.apply(
+      null,
+      buffer.subarray(i, i + CHUNK_SIZE) as ArrayLike<number> as number[],
+    );
   }
-  return btoa(new TextDecoder().decode(asUtf8.subarray(0, j)));
+  return btoa(str);
 }
 
 /**

@@ -1,25 +1,13 @@
 import { expect, test } from "vitest";
 import * as udeps from "./udeps.js";
-import * as udepsLegacy from "./udeps-legacy.js";
 
-test.each([
-  {
-    name: "udeps",
-    encode: udeps.base64Encode,
-    decode: udeps.base64Decode,
-  },
-  {
-    name: "udeps-legacy",
-    encode: udepsLegacy.base64Encode,
-    decode: udepsLegacy.base64Decode,
-  },
-])("$name base64", ({ encode, decode }) => {
+test("base64", () => {
   const input = new Uint8Array(Array(0x100).keys());
-  const encoded = encode(input);
+  const encoded = udeps.base64Encode(input);
   expect(encoded).toBe(Buffer.from(input).toString("base64"));
-  const decoded = decode(encoded);
+  const decoded = udeps.base64Decode(encoded);
   expect(decoded).toEqual(input);
-  const bigEncoded = encode(new Uint8Array(1024 * 1024 * 4)); // 4MB
+  const bigEncoded = udeps.base64Encode(new Uint8Array(1024 * 1024 * 4)); // 4MB
   expect(bigEncoded.length).toEqual(5592408);
 });
 
@@ -70,8 +58,8 @@ test("hex", () => {
   const input = new Uint8Array([0, 15, 16, 255, 254, 253]);
   const hexed = udeps.hexEncode(input);
   expect(hexed).toBe("000f10fffefd");
-  const unhexed = udeps.hexDecode(`${hexed}0`);
-  expect(unhexed).toEqual(input);
+  const unHexed = udeps.hexDecode(`${hexed}0`);
+  expect(unHexed).toEqual(input);
   const bigHexed = udeps.hexEncode(new Uint8Array(1024 * 1024 * 2)); // 2MB
   expect(bigHexed.length).toEqual(1024 * 1024 * 4);
 });
