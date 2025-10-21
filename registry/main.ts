@@ -32,8 +32,7 @@ export function base64Decode(str: string): Uint8Array {
 export function base64Encode(buffer: Uint8Array): string {
   let str = "";
   const CHUNK_SIZE = 1024;
-  let i = 0;
-  for (; i < buffer.length; i += CHUNK_SIZE) {
+  for (let i = 0; i < buffer.length; i += CHUNK_SIZE) {
     str += String.fromCharCode.apply(
       null,
       buffer.subarray(i, i + CHUNK_SIZE) as ArrayLike<number> as number[],
@@ -327,7 +326,7 @@ export function isNumber(value: unknown): value is number {
  * @deprecated   inline=consider
  */
 export function isOdd(num: number) {
-  return num % 2 !== 0;
+  return Math.abs(num % 2) === 1;
 }
 
 /**
@@ -422,13 +421,13 @@ export function objectEntries<T>(obj: { [s: string]: T }) {
  * @requires    ES2017.Object
  * @requires    ES2019.Object
  */
-export function objectFilter<T extends object, U extends keyof T>(
+export function objectFilter<T extends object>(
   obj: T,
-  fn: (key: keyof T, value: T[keyof T]) => key is U,
+  fn: (key: keyof T, value: T[keyof T]) => boolean,
 ) {
   return Object.fromEntries(
     Object.entries(obj).filter(([key, value]) => fn(key as keyof T, value)),
-  ) as Pick<T, U>;
+  ) as Partial<T>;
 }
 
 /**
@@ -572,7 +571,7 @@ export function sleep(ms: number) {
  * @requires      ES5
  */
 export function splitLines(input: string) {
-  return input.split(/\r?\n/);
+  return input.split(/\r?\n|\r/);
 }
 
 /**

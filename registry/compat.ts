@@ -11,15 +11,15 @@
  * @returns     A new object with filtered entries
  * @deprecated  since=ES2019
  */
-export function objectFilter<T extends object, U extends keyof T>(
+export function objectFilter<T extends object>(
   obj: T,
-  fn: (key: keyof T, value: T[keyof T]) => key is U,
+  fn: (key: keyof T, value: T[keyof T]) => boolean,
 ) {
-  const result = {} as Pick<T, U>;
+  const result = {} as Partial<T>;
   for (const key in obj) {
     const value = obj[key];
     if (fn(key, value)) {
-      result[key] = value as T[Extract<keyof T, string> & U];
+      result[key] = value;
     }
   }
   return result;

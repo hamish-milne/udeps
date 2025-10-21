@@ -16,10 +16,13 @@ Registry:
 Admin:
   ✔ CI @done(25-10-21 12:44)
   ☐ npm package
-  ☐ Unit testing
-  ☐ Coverage badges
+  ✔ Unit testing @done(25-10-21 15:39)
+  ☐ Badges
 Features:
   ☐ Compare changes with registry impl
   ☐ Audit for obsolete entries (with 'list' command)
-  ☐ Auto-upgrade call sites
+  ☐ Auto-upgrade call sites (codemods)
   ☐ 'config' command
+Future work:
+  ☐ Integrate with inliner build tool
+  ☐ Consider polyfills/ponyfills
