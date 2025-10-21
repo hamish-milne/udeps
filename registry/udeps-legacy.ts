@@ -1,6 +1,44 @@
 // BSD Zero Clause License
 
 /**
+ * Decodes a base64-encoded string to a Uint8Array buffer. Cross-platform, but significantly slower than the Node.js Buffer API.
+ * @param str   Base64-encoded string
+ * @returns     Decoded Uint8Array buffer
+ * @requires    ES5
+ * @deprecated  since=node, replace-with={@link Buffer.from}
+ * @deprecated  since=ESNext, replace-with={@link Uint8Array.fromBase64}
+ */
+export function base64Decode(str: string): Uint8Array {
+  const raw = atob(str);
+  const result = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) {
+    result[i] = raw.charCodeAt(i);
+  }
+  return result;
+}
+
+/**
+ * Encodes a Uint8Array buffer to a base64-encoded string. Cross-platform, but significantly slower than the Node.js Buffer API.
+ * @param buffer   Uint8Array buffer to encode
+ * @returns        Base64-encoded string
+ * @requires       ES5
+ * @deprecated     since=node, replace-with={@link Buffer.prototype.toString}
+ * @deprecated     since=ESNext, replace-with={@link Uint8Array.toBase64}
+ */
+export function base64Encode(buffer: Uint8Array): string {
+  let str = "";
+  const CHUNK_SIZE = 1024;
+  let i = 0;
+  for (; i < buffer.length; i += CHUNK_SIZE) {
+    str += String.fromCharCode.apply(
+      null,
+      buffer.subarray(i, i + CHUNK_SIZE) as ArrayLike<number> as number[],
+    );
+  }
+  return btoa(str);
+}
+
+/**
  * Filters the entries of an object based on a provided predicate function.
  * @param obj   The object to filter
  * @param fn    The predicate function

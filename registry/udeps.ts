@@ -1,36 +1,60 @@
 // BSD Zero Clause License
 
 /**
- * Decodes a base64-encoded string to a Uint8Array buffer. Works in both Node.js and browser environments.
+ * Decodes a base64-encoded string to a Uint8Array buffer. Cross-platform, but significantly slower than the Node.js Buffer API.
+ * This implementation uses {@link atob} and {@link TextEncoder} for the best possible performance.
  * @param str   Base64-encoded string
  * @returns     Decoded Uint8Array buffer
- * @requires    ES2015.Core
+ * @requires    ES2015
  * @deprecated  since=node, replace-with={@link Buffer.from}
  * @deprecated  since=ESNext, replace-with={@link Uint8Array.fromBase64}
  */
 export function base64Decode(str: string): Uint8Array {
   const raw = atob(str);
-  const result = new Uint8Array(raw.length);
-  for (let i = 0; i < raw.length; i++) {
-    result[i] = raw.charCodeAt(i);
+  const asUtf8 = new TextEncoder().encode(raw);
+  let j = 0;
+  // Convert UTF-8 bytes to "Latin-1"
+  for (let i = 0; i < asUtf8.length; i++) {
+    switch (asUtf8[i]) {
+      case 0xc2:
+        break;
+      case 0xc3:
+        asUtf8[j++] = asUtf8[++i] + 0x40;
+        break;
+      default:
+        asUtf8[j++] = asUtf8[i];
+        break;
+    }
   }
-  return result;
+  return asUtf8.subarray(0, j);
 }
 
 /**
- * Encodes a Uint8Array buffer to a base64-encoded string. Works in both Node.js and browser environments.
+ * Encodes a Uint8Array buffer to a base64-encoded string. Cross-platform, but significantly slower than the Node.js Buffer API.
+ * This implementation uses {@link btoa} and {@link TextDecoder} for the best possible performance.
  * @param buffer   Uint8Array buffer to encode
  * @returns        Base64-encoded string
- * @requires       ES2015.Core
+ * @requires       ES2015
  * @deprecated     since=node, replace-with={@link Buffer.prototype.toString}
  * @deprecated     since=ESNext, replace-with={@link Uint8Array.toBase64}
  */
-export function base64Encode(buffer: Uint8Array | number[]): string {
-  let result = "";
+export function base64Encode(buffer: Uint8Array): string {
+  const asUtf8 = new Uint8Array(buffer.length * 2);
+  let j = 0;
+  // Convert "Latin-1" bytes to UTF-8
   for (let i = 0; i < buffer.length; i++) {
-    result += String.fromCharCode(buffer[i]);
+    const byte = buffer[i];
+    if (byte < 0x80) {
+      asUtf8[j++] = byte;
+    } else if (byte < 0xc0) {
+      asUtf8[j++] = 0xc2;
+      asUtf8[j++] = byte;
+    } else {
+      asUtf8[j++] = 0xc3;
+      asUtf8[j++] = byte - 0x40;
+    }
   }
-  return btoa(result);
+  return btoa(new TextDecoder().decode(asUtf8.subarray(0, j)));
 }
 
 /**
@@ -58,7 +82,13 @@ export function chunk<T>(input: readonly T[], size: number) {
  * @requires        ES5
  */
 export function classJoin(...classes: (string | false | null | undefined)[]) {
-  return classes.filter(Boolean).join(" ");
+  let result = "";
+  for (const cls of classes) {
+    if (cls) {
+      result += (result && " ") + cls;
+    }
+  }
+  return result;
 }
 
 /**
@@ -91,7 +121,7 @@ export function difference<T>(
  * Ensures the input is returned as an array.
  * @param input   Input value which can be a single item, an array, an iterable, null, or undefined
  * @returns       An array containing the input value(s), or an empty array if input is nullish
- * @requires      ES5
+ * @requires      ES2015.Iterable
  */
 export function forceArray<T>(input: T | T[] | null | undefined | Iterable<T>) {
   return input == null
@@ -115,33 +145,47 @@ export function getIterator<T>(iterable: Iterable<T>) {
 }
 
 /**
- * Decodes a hexadecimal string to a Uint8Array buffer.
+ * Decodes a hexadecimal string to a Uint8Array buffer. Cross-platform, but significantly slower than the Node.js Buffer API.
  * @param str   Hexadecimal string
  * @returns     Decoded Uint8Array buffer
- * @requires    ES2015.Core
+ * @requires    ES5
  * @deprecated  since=node, replace-with={@link Buffer.from}
  * @deprecated  since=ESNext, replace-with={@link Uint8Array.fromHex}
  */
 export function hexDecode(str: string): Uint8Array {
   const result = new Uint8Array(str.length / 2);
-  for (let i = 0; i < str.length - 1; i += 2) {
-    result[i / 2] = parseInt(str.substring(i, i + 2), 16);
+  const view = new DataView(result.buffer);
+  let i = 0;
+  for (; i < str.length - 7; i += 8) {
+    view.setUint32(i / 2, parseInt(str.substring(i, i + 8), 16));
+  }
+  for (; i < str.length - 1; i += 2) {
+    view.setUint8(i / 2, parseInt(str.substring(i, i + 2), 16));
   }
   return result;
 }
 
 /**
- * Encodes a Uint8Array buffer to a hexadecimal string.
+ * Encodes a Uint8Array buffer to a hexadecimal string. Cross-platform, but significantly slower than the Node.js Buffer API.
  * @param buffer   Uint8Array buffer to encode
  * @returns        Hexadecimal string
- * @requires       ES2015.Core
+ * @requires       ES5
  * @deprecated     since=node, replace-with={@link Buffer.prototype.toString}
  * @deprecated     since=ESNext, replace-with={@link Uint8Array.toHex}
  */
-export function hexEncode(buffer: Uint8Array | number[]): string {
+export function hexEncode(buffer: Uint8Array): string {
+  const view = new DataView(
+    buffer.buffer,
+    buffer.byteOffset,
+    buffer.byteLength,
+  );
   let result = "";
-  for (let i = 0; i < buffer.length; i++) {
-    result += buffer[i].toString(16).padStart(2, "0");
+  let i = 0;
+  for (; i < buffer.byteLength - 3; i += 4) {
+    result += view.getUint32(i).toString(16).padStart(8, "0");
+  }
+  for (; i < buffer.byteLength; i++) {
+    result += view.getUint8(i).toString(16).padStart(2, "0");
   }
   return result;
 }
@@ -545,7 +589,7 @@ export function stringReplaceAll(
  * @param input   Array to process
  * @returns       Array with unique values
  * @deprecated    inline=consider
- * @requires      ES5
+ * @requires      ES2015.Iterable
  * @requires      ES2015.Collection
  */
 export function unique<T>(input: readonly T[]) {
