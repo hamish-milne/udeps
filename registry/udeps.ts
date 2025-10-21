@@ -9,7 +9,12 @@
  * @deprecated  since=ESNext, replace-with={@link Uint8Array.fromBase64}
  */
 export function base64Decode(str: string): Uint8Array {
-  return new TextEncoder().encode(atob(str));
+  const raw = atob(str);
+  const result = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) {
+    result[i] = raw.charCodeAt(i);
+  }
+  return result;
 }
 
 /**
@@ -20,8 +25,12 @@ export function base64Decode(str: string): Uint8Array {
  * @deprecated     since=node, replace-with={@link Buffer.prototype.toString}
  * @deprecated     since=ESNext, replace-with={@link Uint8Array.toBase64}
  */
-export function base64Encode(buffer: Uint8Array): string {
-  return btoa(new TextDecoder().decode(buffer));
+export function base64Encode(buffer: Uint8Array | number[]): string {
+  let result = "";
+  for (let i = 0; i < buffer.length; i++) {
+    result += String.fromCharCode(buffer[i]);
+  }
+  return btoa(result);
 }
 
 /**
@@ -129,7 +138,7 @@ export function hexDecode(str: string): Uint8Array {
  * @deprecated     since=node, replace-with={@link Buffer.prototype.toString}
  * @deprecated     since=ESNext, replace-with={@link Uint8Array.toHex}
  */
-export function hexEncode(buffer: Uint8Array): string {
+export function hexEncode(buffer: Uint8Array | number[]): string {
   let result = "";
   for (let i = 0; i < buffer.length; i++) {
     result += buffer[i].toString(16).padStart(2, "0");
