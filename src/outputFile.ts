@@ -1,10 +1,9 @@
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { namedTypes } from "ast-types";
 import consola from "consola";
-import { parse as jsParse, print } from "recast";
-import * as typescriptParser from "recast/parsers/typescript.js";
+import { isExportFunction, parseJs, printJs, stripTypes } from "./codeUtils.ts";
 import { cError, cInfo, cSuccess, cWarning } from "./colors.ts";
-import { type FunctionEntry, stripTypes } from "./registry.ts";
+import type { FunctionEntry } from "./registry.ts";
 
 function removeMetaDocTags(func: namedTypes.ExportNamedDeclaration) {
   for (const comment of func.comments || []) {
@@ -68,20 +67,14 @@ export function insertIntoFile(filePath: string, entries: FunctionEntry[]) {
   const fileContent = existsSync(filePath)
     ? readFileSync(filePath, "utf-8")
     : "";
-  const fileAst: namedTypes.File = jsParse(fileContent, {
-    parser: typescriptParser,
-  });
+  const fileAst = parseJs(fileContent);
   const { body } = fileAst.program;
   let added = 0;
   for (const entry of entries) {
     let i: number | null = 0;
     for (i = 0; i < body.length; i++) {
       const node = body[i];
-      if (
-        node.type === "ExportNamedDeclaration" &&
-        node.declaration?.type === "FunctionDeclaration" &&
-        node.declaration.id
-      ) {
+      if (isExportFunction(node)) {
         if (node.declaration.id.name > entry.name) {
           break;
         }
@@ -105,7 +98,7 @@ export function insertIntoFile(filePath: string, entries: FunctionEntry[]) {
     consola.success(
       `Added ${cSuccess(added)} functions to ${cInfo(filePath)}.`,
     );
-    let code = print(fileAst).code;
+    let code = printJs(fileAst);
     if (!code.endsWith("\n")) {
       code += "\n";
     }
@@ -120,16 +113,11 @@ export function removeFromFile(filePath: string, names: string[]) {
     consola.error(`File ${cInfo(filePath)} does not exist.`);
     return;
   }
-  const fileAst: namedTypes.File = jsParse(readFileSync(filePath, "utf-8"), {
-    parser: typescriptParser,
-  });
+  const fileAst = parseJs(readFileSync(filePath, "utf-8"));
   const { body } = fileAst.program;
   for (const name of names) {
     const index = body.findIndex(
-      (node) =>
-        node.type === "ExportNamedDeclaration" &&
-        node.declaration?.type === "FunctionDeclaration" &&
-        node.declaration.id?.name === name,
+      (node) => isExportFunction(node) && node.declaration.id.name === name,
     );
     if (index === -1) {
       consola.warn(
@@ -143,5 +131,5 @@ export function removeFromFile(filePath: string, names: string[]) {
     );
   }
   consola.debug(`Writing changes to ${cInfo(filePath)}.`);
-  writeFileSync(filePath, print(fileAst).code);
+  writeFileSync(filePath, printJs(fileAst));
 }

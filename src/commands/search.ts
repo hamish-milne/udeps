@@ -3,12 +3,11 @@ import consola from "consola";
 import { search as fuzzySearch } from "fast-fuzzy";
 import { cGray, cInfo, cStrong, cSuccess, cWarning } from "../colors.ts";
 import { loadConfig } from "../config.ts";
+import { getMissingLibsForEntry, isEntryObsolete } from "../libSupport.ts";
 import {
   type DeprecatedReason,
   type FunctionEntry,
   formatDeprecatedReason,
-  isEntryObsolete,
-  isEntrySupported,
   loadRegistries,
 } from "../registry.ts";
 
@@ -62,7 +61,7 @@ export const search = defineCommand({
     const unsupportedMatches: FunctionEntry[] = [];
     const supportedMatches: [FunctionEntry, DeprecatedReason | null][] = [];
     for (const match of matches) {
-      if (isEntrySupported(config, match).length === 0) {
+      if (getMissingLibsForEntry(config, match).length === 0) {
         supportedMatches.push([match, isEntryObsolete(match, config)]);
       } else {
         unsupportedMatches.push(match);

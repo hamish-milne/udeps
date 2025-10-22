@@ -2,12 +2,11 @@ import { defineCommand } from "citty";
 import consola from "consola";
 import { cError, cInfo, cSuccess, cWarning } from "../colors.ts";
 import { loadConfig } from "../config.ts";
+import { getMissingLibsForEntry, isEntryObsolete } from "../libSupport.ts";
 import { insertIntoFile } from "../outputFile.ts";
 import {
   type FunctionEntry,
   formatDeprecatedReason,
-  isEntryObsolete,
-  isEntrySupported,
   loadRegistries,
 } from "../registry.ts";
 
@@ -37,7 +36,7 @@ export const add = defineCommand({
           consola.debug(`No implementation found in registry ${cInfo(name)}`);
           continue;
         }
-        const unsupportedLibs = isEntrySupported(config, candidate);
+        const unsupportedLibs = getMissingLibsForEntry(config, candidate);
         if (unsupportedLibs.length > 0) {
           consola.info(
             `The implementation of ${cInfo(candidate.name)} in registry ${cInfo(registry)} requires unsupported libs: ${cWarning(
