@@ -1,7 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import consola from "consola";
-import { parse as json5parse } from "json5";
+import json5 from "json5";
 import { packageDirectorySync } from "package-directory";
 import { cInfo } from "./colors.ts";
 
@@ -54,7 +54,7 @@ export function loadConfig(): UdepsConfig {
   consola.debug(`Attempt to load tsconfig from ${cInfo(tsconfigPath)}`);
   const { compilerOptions: { lib: tsconfigLib } = { lib: undefined } } =
     existsSync(tsconfigPath)
-      ? (json5parse(readFileSync(tsconfigPath, "utf-8")) as TSConfig)
+      ? (json5.parse(readFileSync(tsconfigPath, "utf-8")) as TSConfig)
       : {};
   const config = Object.assign(
     defaultConfig,

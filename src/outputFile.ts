@@ -56,7 +56,7 @@ function detectFileType(
   };
 }
 
-export function insertIntoFile(filePath: string, entry: FunctionEntry) {
+export function insertIntoFile(filePath: string, entries: FunctionEntry[]) {
   const { language, module } = detectFileType(filePath, undefined);
   if (module === "cjs") {
     consola.error(
@@ -72,29 +72,47 @@ export function insertIntoFile(filePath: string, entry: FunctionEntry) {
     parser: typescriptParser,
   });
   const { body } = fileAst.program;
-  let i = 0;
-  for (i = 0; i < body.length; i++) {
-    const node = body[i];
-    if (
-      node.type === "ExportNamedDeclaration" &&
-      node.declaration?.type === "FunctionDeclaration" &&
-      node.declaration.id
-    ) {
-      if (node.declaration.id.name > entry.name) {
-        break;
-      }
-      if (node.declaration.id.name === entry.name) {
-        consola.error(
-          `Function ${cError(entry.name)} already exists in ${cInfo(filePath)}.`,
-        );
-        return;
+  let added = 0;
+  for (const entry of entries) {
+    let i: number | null = 0;
+    for (i = 0; i < body.length; i++) {
+      const node = body[i];
+      if (
+        node.type === "ExportNamedDeclaration" &&
+        node.declaration?.type === "FunctionDeclaration" &&
+        node.declaration.id
+      ) {
+        if (node.declaration.id.name > entry.name) {
+          break;
+        }
+        if (node.declaration.id.name === entry.name) {
+          consola.error(
+            `Function ${cError(entry.name)} already exists in ${cInfo(filePath)}.`,
+          );
+          i = null;
+          break;
+        }
       }
     }
+    if (i != null) {
+      const content =
+        language === "ts" ? entry.content : stripTypes(entry.content);
+      body.splice(i, 0, removeMetaDocTags(content));
+      added++;
+    }
   }
-  const content = language === "ts" ? entry.content : stripTypes(entry.content);
-  body.splice(i, 0, removeMetaDocTags(content));
-  consola.debug(`Writing changes to ${cInfo(filePath)}.`);
-  writeFileSync(filePath, print(fileAst).code);
+  if (added > 0) {
+    consola.success(
+      `Added ${cSuccess(added)} functions to ${cInfo(filePath)}.`,
+    );
+    let code = print(fileAst).code;
+    if (!code.endsWith("\n")) {
+      code += "\n";
+    }
+    writeFileSync(filePath, code);
+  } else {
+    consola.info(`${cInfo(filePath)} is unchanged`);
+  }
 }
 
 export function removeFromFile(filePath: string, names: string[]) {

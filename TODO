@@ -26,3 +26,7 @@ Features:
 Future work:
   ☐ Integrate with inliner build tool
   ☐ Consider polyfills/ponyfills
+Docs:
+  ☐ Work out how to add package replacements & detailed text
+  ☐ Parse .ts file to .json
+  ☐ Generate reference site from JSON

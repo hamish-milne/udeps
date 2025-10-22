@@ -4,6 +4,7 @@ import { cError, cInfo, cSuccess, cWarning } from "../colors.ts";
 import { loadConfig } from "../config.ts";
 import { insertIntoFile } from "../outputFile.ts";
 import {
+  type FunctionEntry,
   formatDeprecatedReason,
   isEntryObsolete,
   isEntrySupported,
@@ -23,9 +24,10 @@ export const add = defineCommand({
     },
   },
   async run({ args: { _: toAdd } }) {
+    const config = loadConfig();
+    const entriesToAdd: FunctionEntry[] = [];
     for (const name of toAdd) {
       consola.info(`Adding micro-dependency: ${cInfo(name)}`);
-      const config = loadConfig();
       let found = false;
       for await (const [registry, entries] of loadRegistries(config)) {
         const candidate = entries.find(
@@ -59,7 +61,7 @@ export const add = defineCommand({
             { type: "confirm", initial: false },
           ));
         if (confirm) {
-          insertIntoFile(config.outputFile, candidate);
+          entriesToAdd.push(candidate);
         }
         break;
       }
@@ -69,5 +71,6 @@ export const add = defineCommand({
         );
       }
     }
+    insertIntoFile(config.outputFile, entriesToAdd);
   },
 });
