@@ -2,6 +2,9 @@ import type { UdepsConfig } from "./config.ts";
 import type { DeprecatedReason, FunctionEntry } from "./registry.ts";
 
 function getEsVersionIndex(esVersion: string) {
+  if (esVersion.toLowerCase() === "esnext") {
+    return Infinity;
+  }
   const numberPart = esVersion.match(/^es(\d+)/i);
   if (numberPart) {
     const year = parseInt(numberPart[1], 10);

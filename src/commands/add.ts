@@ -1,7 +1,7 @@
 import { defineCommand } from "citty";
 import consola from "consola";
 import { cError, cInfo, cSuccess, cWarning } from "../colors.ts";
-import { loadConfig } from "../config.ts";
+import { getConfig } from "../config.ts";
 import { getMissingLibsForEntry, isEntryObsolete } from "../libSupport.ts";
 import { insertIntoFile } from "../outputFile.ts";
 import {
@@ -23,7 +23,7 @@ export const add = defineCommand({
     },
   },
   async run({ args: { _: toAdd } }) {
-    const config = loadConfig();
+    const config = getConfig(this);
     const entriesToAdd: FunctionEntry[] = [];
     for (const name of toAdd) {
       consola.info(`Adding micro-dependency: ${cInfo(name)}`);

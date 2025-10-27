@@ -1,5 +1,5 @@
 import { defineCommand } from "citty";
-import { loadConfig } from "../config.ts";
+import { getConfig } from "../config.ts";
 import { removeFromFile } from "../outputFile.ts";
 
 export const remove = defineCommand({
@@ -14,8 +14,8 @@ export const remove = defineCommand({
       required: true,
     },
   },
-  async run({ args }) {
-    const config = loadConfig();
-    removeFromFile(config.outputFile, args._);
+  async run({ args: { _: toRemove } }) {
+    const config = getConfig(this);
+    removeFromFile(config.outputFile, toRemove);
   },
 });

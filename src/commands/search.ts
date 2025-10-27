@@ -2,7 +2,7 @@ import { defineCommand } from "citty";
 import consola from "consola";
 import { search as fuzzySearch } from "fast-fuzzy";
 import { cGray, cInfo, cStrong, cSuccess, cWarning } from "../colors.ts";
-import { loadConfig } from "../config.ts";
+import { getConfig } from "../config.ts";
 import { getMissingLibsForEntry, isEntryObsolete } from "../libSupport.ts";
 import {
   type DeprecatedReason,
@@ -38,9 +38,9 @@ export const search = defineCommand({
     },
   },
   async run({ args }) {
+    const config = getConfig(this);
     const query = args._.join(" ");
     consola.info(`Searching for: ${cInfo(query)}`);
-    const config = loadConfig();
     const allEntries: FunctionEntry[] = [];
     for await (const [registry, entries] of loadRegistries(config)) {
       consola.debug(
