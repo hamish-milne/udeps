@@ -9,7 +9,7 @@ export function parseJs(source: string): namedTypes.File {
 }
 
 export function printJs(ast: ASTNode): string {
-  return print(ast).code;
+  return print(ast, { lineTerminator: "\n" }).code;
 }
 
 export function printInline(func: namedTypes.FunctionDeclaration) {

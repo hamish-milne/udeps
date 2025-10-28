@@ -1,4 +1,4 @@
-import { runMain } from "citty";
+import { defineCommand } from "citty";
 import consola, { LogLevels } from "consola";
 import { add } from "./commands/add.ts";
 import { remove } from "./commands/remove.ts";
@@ -14,7 +14,7 @@ function argArray(arg: string | undefined): string[] | null {
     : null;
 }
 
-runMain({
+export const cli = defineCommand({
   meta: {
     name: "udeps",
     description:

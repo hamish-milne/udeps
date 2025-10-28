@@ -90,6 +90,7 @@ export function insertIntoFile(filePath: string, entries: FunctionEntry[]) {
     if (i != null) {
       const content =
         language === "ts" ? entry.content : stripTypes(entry.content);
+      content.comments?.splice(0, content.comments.length - 1); // Remove all but last comment
       body.splice(i, 0, removeMetaDocTags(content));
       added++;
     }

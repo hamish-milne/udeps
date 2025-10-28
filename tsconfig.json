@@ -4,6 +4,7 @@
   },
   "references": [
     { "path": "./tsconfig.src.json" },
-    { "path": "./tsconfig.registry.json" }
+    { "path": "./tsconfig.registry.json" },
+    { "path": "./tsconfig.test.json" }
   ]
 }
