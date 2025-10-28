@@ -7,7 +7,7 @@
     "verbatimModuleSyntax": true,
     "composite": true,
     "erasableSyntaxOnly": true,
-    "emitDeclarationOnly": true
+    "noEmit": true
   },
   "exclude": ["node_modules", "**/*.test.ts", ".yarn"]
 }
