@@ -1,6 +1,6 @@
 import { normalize } from "node:path";
 import { runCommand } from "citty";
-import { expect, test, vi } from "vitest";
+import { expect, onTestFinished, test, vi } from "vitest";
 
 const exampleTsFunction = `
 /**
@@ -10,7 +10,6 @@ export function oldFunction(): void {
   console.log("This is the old function.");
 }
 `;
-const exampleJsFunction = exampleTsFunction.replace(/: void/, "");
 
 const mockRegistryPath = "https://example.com/udeps/registry.json";
 const mockRegistryContents = `
@@ -57,6 +56,12 @@ function setupMocks(
       return normalize(paths.join("/"));
     },
   }));
+  onTestFinished(() => {
+    vi.unstubAllGlobals();
+    vi.doUnmock("node:fs");
+    vi.doUnmock("node:path");
+    vi.resetModules();
+  });
 }
 
 test("add/remove function", async () => {
@@ -92,4 +97,99 @@ test("add/remove function", async () => {
   expect(files).toMatchObject({
     "udeps-lib.ts": expect.stringMatching(/^\s+$/),
   });
+});
+
+test("add function to JS file", async () => {
+  const files = {
+    "udeps.json": JSON.stringify({
+      lib: ["es2020"],
+      outputFile: "./udeps-lib.js",
+      registry: [mockRegistryPath],
+    }),
+    "udeps-lib.js": "",
+  };
+  const urls = {
+    [mockRegistryPath]: mockRegistryContents,
+  };
+  setupMocks(files, urls);
+  const { cli } = await import("./cli.js");
+  await runCommand(cli, {
+    rawArgs: ["--debug", "--project=.", "add", "oldFunction"],
+  });
+  expect(files).toMatchObject({
+    "udeps-lib.js": expect.stringContaining(
+      exampleTsFunction.replace(/: void/, "").trim(),
+    ),
+  });
+});
+
+test("function not found", async () => {
+  const files = {
+    "udeps.json": JSON.stringify({
+      lib: ["es2020"],
+      outputFile: "./udeps-lib.ts",
+      registry: [mockRegistryPath],
+    }),
+    "udeps-lib.ts": "",
+  };
+  const urls = {
+    [mockRegistryPath]: mockRegistryContents,
+  };
+  setupMocks(files, urls);
+  const { cli } = await import("./cli.js");
+  await runCommand(cli, {
+    rawArgs: ["--debug", "--project=.", "add", "nonExistentFunction"],
+  });
+  expect(files).toMatchObject({
+    "udeps-lib.ts": "",
+  });
+  await runCommand(cli, {
+    rawArgs: ["--debug", "--project=.", "remove", "oldFunction"],
+  });
+  expect(files).toMatchObject({
+    "udeps-lib.ts": "",
+  });
+});
+
+test("no udeps.json", async () => {
+  const files = {};
+  const urls = {
+    [mockRegistryPath]: mockRegistryContents,
+  };
+  setupMocks(files, urls);
+  const { cli } = await import("./cli.js");
+  await runCommand(cli, {
+    rawArgs: [
+      "--debug",
+      "--project=.",
+      `--registry=${mockRegistryPath}`,
+      "add",
+      "oldFunction",
+    ],
+  });
+  expect(files).toMatchObject({
+    "udeps.ts": expect.stringContaining(exampleTsFunction.trim()),
+  });
+});
+
+test("search function", async () => {
+  const files = {};
+  const urls = {
+    [mockRegistryPath]: mockRegistryContents,
+  };
+  setupMocks(files, urls);
+  const { cli } = await import("./cli.js");
+  const stdoutSpy = vi.spyOn(process.stdout, "write");
+  await runCommand(cli, {
+    rawArgs: [
+      "--debug",
+      "--project=.",
+      `--registry=${mockRegistryPath}`,
+      "search",
+      "oldFunction",
+    ],
+  });
+  expect(stdoutSpy).toHaveBeenCalledWith(
+    expect.stringMatching(/\[success\].+?oldFunction/s),
+  );
 });

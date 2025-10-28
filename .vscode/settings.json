@@ -9,7 +9,8 @@
     "biomejs",
     "citty",
     "KHTML",
-    "udeps"
+    "udeps",
+    "unstub"
   ],
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
