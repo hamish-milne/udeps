@@ -20,6 +20,7 @@
     "package-directory": "^8.1.0",
     "recast": "^0.23.11",
     "typescript": "^5.9.3",
+    "vitepress": "2.0.0-alpha.12",
     "vitest": "^3.2.4"
   },
   "resolutions": {
@@ -31,6 +32,10 @@
     "sdks": "yarn dlx @yarnpkg/sdks vscode",
     "run-ts": "node --require ./.pnp.cjs --experimental-loader ./.pnp.loader.mjs --experimental-strip-types",
     "build": "esbuild --bundle ./src/index.ts --outfile=./dist/index.cjs --sourcemap --tsconfig=./tsconfig.src.json --platform=node --format=cjs",
-    "test": "vitest run"
+    "test": "vitest run",
+    "docs:gen": "yarn run-ts ./src/registryDocs.ts",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   }
 }

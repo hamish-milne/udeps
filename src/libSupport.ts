@@ -1,3 +1,4 @@
+import type { Spec } from "comment-parser";
 import type { UdepsConfig } from "./config.ts";
 import type { DeprecatedReason, FunctionEntry } from "./registry.ts";
 
@@ -53,8 +54,7 @@ export function isEntryObsolete(
   if (!deprecatedTag) {
     return null;
   }
-  const text = `${deprecatedTag.name} ${deprecatedTag.description}`.trim();
-  const reason = parseTagProperties<keyof DeprecatedReason>(text);
+  const reason = parseTagProperties<keyof DeprecatedReason>(deprecatedTag);
   if (reason.since && checkMissingLibs(config.lib, [reason.since]).length > 0) {
     return reason.inline ? { inline: reason.inline } : null;
   }
@@ -66,9 +66,9 @@ function unwrapLink(str: string): string {
   return match ? match[1] : str;
 }
 
-function parseTagProperties<T extends string>(str: string) {
+export function parseTagProperties<T extends string>(str: Spec) {
   const props: Partial<Record<T, string>> = {};
-  const parts = str.split(/\s*,\s*/);
+  const parts = `${str.name} ${str.description}`.trim().split(/\s*,\s*/);
   for (const part of parts) {
     const [key, ...rest] = part.split("=");
     const value = rest.join("=").trim();
