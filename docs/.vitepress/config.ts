@@ -4,6 +4,7 @@ import { defineConfig } from 'vitepress'
 export default defineConfig({
   title: "udeps",
   description: "JS micro-dependencies",
+  base: "/udeps/",
   themeConfig: {
     nav: [],
 
