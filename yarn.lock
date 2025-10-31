@@ -1024,7 +1024,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@vue/server-renderer@npm:3.5.22":
+"@vue/server-renderer@npm:3.5.22, @vue/server-renderer@npm:^3.5.22":
   version: 3.5.22
   resolution: "@vue/server-renderer@npm:3.5.22"
   dependencies:
@@ -2456,6 +2456,7 @@ __metadata:
     "@biomejs/biome": "npm:^2.2.6"
     "@types/node": "npm:^18.19.130"
     "@vitest/coverage-v8": "npm:^3.2.4"
+    "@vue/server-renderer": "npm:^3.5.22"
     ast-types: "npm:^0.16.1"
     citty: "npm:^0.1.6"
     comment-parser: "npm:^1.4.1"
@@ -2468,6 +2469,7 @@ __metadata:
     typescript: "npm:^5.9.3"
     vitepress: "npm:2.0.0-alpha.12"
     vitest: "npm:^3.2.4"
+    vue: "npm:^3.5.22"
   languageName: unknown
   linkType: soft
 
@@ -3074,7 +3076,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vue@npm:^3.5.18":
+"vue@npm:^3.5.18, vue@npm:^3.5.22":
   version: 3.5.22
   resolution: "vue@npm:3.5.22"
   dependencies:
