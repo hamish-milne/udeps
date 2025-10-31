@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { resolve } from "node:path";
 import consola from "consola";
 import json5 from "json5";
-import { packageDirectorySync } from "package-directory";
+import { findPackage } from "pkg-types";
 import { cInfo } from "./colors.ts";
 
 export interface UdepsConfig {
@@ -30,11 +30,11 @@ const defaultConfig: UdepsConfig = {
   ],
 };
 
-export function loadConfig(
+export async function loadConfig(
   path: string,
   args: Partial<UdepsConfig>,
-): UdepsConfig {
-  const packageDir = args.project || packageDirectorySync() || process.cwd();
+): Promise<UdepsConfig> {
+  const packageDir = args.project || (await findPackage());
   consola.debug(`Using package directory: ${cInfo(packageDir)}`);
   const configPath = resolve(packageDir, path);
   const tsconfigPath = resolve(packageDir, "tsconfig.json");

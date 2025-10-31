@@ -58,7 +58,7 @@ export const cli = defineCommand({
       consola.level = LogLevels.debug;
       consola.debug("Debug logging enabled");
     }
-    const config = loadConfig(
+    const config = await loadConfig(
       args.config,
       // Only override config entries where a value has been specified
       Object.fromEntries(
