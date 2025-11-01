@@ -2457,31 +2457,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"root-workspace-0b6124@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "root-workspace-0b6124@workspace:."
-  dependencies:
-    "@babel/parser": "npm:^7.28.4"
-    "@biomejs/biome": "npm:^2.2.6"
-    "@types/node": "npm:^18.19.130"
-    "@vitest/coverage-v8": "npm:^3.2.4"
-    "@vue/server-renderer": "npm:^3.5.22"
-    ast-types: "npm:^0.16.1"
-    citty: "npm:^0.1.6"
-    comment-parser: "npm:^1.4.1"
-    consola: "npm:^3.4.2"
-    esbuild: "npm:^0.25.11"
-    fast-fuzzy: "npm:^1.12.0"
-    json5: "npm:^2.2.3"
-    pkg-types: "npm:^2.3.0"
-    recast: "npm:^0.23.11"
-    typescript: "npm:^5.9.3"
-    vitepress: "npm:2.0.0-alpha.12"
-    vitest: "npm:^3.2.4"
-    vue: "npm:^3.5.22"
-  languageName: unknown
-  linkType: soft
-
 "safer-buffer@npm:>= 2.1.2 < 3.0.0":
   version: 2.1.2
   resolution: "safer-buffer@npm:2.1.2"
@@ -2816,6 +2791,31 @@ __metadata:
   checksum: 10c0/ad09fdf7a756814dce65bc60c1657b40d44451346858eea230e10f2e95a289d9183b6e32e5c11e95acc0ccc214b4f36289dcad4bf1886b0adb84d711d336a430
   languageName: node
   linkType: hard
+
+"udeps@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "udeps@workspace:."
+  dependencies:
+    "@babel/parser": "npm:^7.28.4"
+    "@biomejs/biome": "npm:^2.2.6"
+    "@types/node": "npm:^18.19.130"
+    "@vitest/coverage-v8": "npm:^3.2.4"
+    "@vue/server-renderer": "npm:^3.5.22"
+    ast-types: "npm:^0.16.1"
+    citty: "npm:^0.1.6"
+    comment-parser: "npm:^1.4.1"
+    consola: "npm:^3.4.2"
+    esbuild: "npm:^0.25.11"
+    fast-fuzzy: "npm:^1.12.0"
+    json5: "npm:^2.2.3"
+    pkg-types: "npm:^2.3.0"
+    recast: "npm:^0.23.11"
+    typescript: "npm:^5.9.3"
+    vitepress: "npm:2.0.0-alpha.12"
+    vitest: "npm:^3.2.4"
+    vue: "npm:^3.5.22"
+  languageName: unknown
+  linkType: soft
 
 "undici-types@npm:~5.26.4":
   version: 5.26.5

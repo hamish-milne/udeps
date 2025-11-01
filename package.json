@@ -43,6 +43,6 @@
     "docs:preview": "vitepress preview docs"
   },
   "files": [
-    "dist/index.cjs"
+    "/dist/index.cjs"
   ]
 }
