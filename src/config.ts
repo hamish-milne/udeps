@@ -40,12 +40,12 @@ export async function loadConfig(
   const tsconfigPath = resolve(packageDir, "tsconfig.json");
   consola.debug(`Attempt to load configuration from ${cInfo(configPath)}`);
   const userConfig = existsSync(configPath)
-    ? (JSON.parse(readFileSync(configPath, "utf-8")) as Partial<UdepsConfig>)
+    ? json5.parse<Partial<UdepsConfig>>(readFileSync(configPath, "utf-8"))
     : {};
   consola.debug(`Attempt to load tsconfig from ${cInfo(tsconfigPath)}`);
   const { compilerOptions: { lib: tsconfigLib } = { lib: undefined } } =
     existsSync(tsconfigPath)
-      ? (json5.parse(readFileSync(tsconfigPath, "utf-8")) as TSConfig)
+      ? json5.parse<TSConfig>(readFileSync(tsconfigPath, "utf-8"))
       : {};
   const config = Object.assign(
     defaultConfig,

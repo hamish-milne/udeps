@@ -47,7 +47,7 @@ jobs:
       - run: yarn biome lint
         if: always()
       - uses: davelosert/vitest-coverage-report-action@v2
-        if: always()
+        if: matrix.node-version == '24.x'
       - run: yarn docs:gen
         if: matrix.node-version == '24.x'
       - run: yarn docs:build

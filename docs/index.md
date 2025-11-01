@@ -1,1 +1,1 @@
-<!--@include: ../README.md{,15}-->
+<!--@include: ../README.md-->
