@@ -15,7 +15,7 @@ Registry:
   ☐ Add HTTP cache
 Admin:
   ✔ CI @done(25-10-21 12:44)
-  ☐ npm package
+  ✔ npm package @done(25-11-01 12:41)
   ✔ Unit testing @done(25-10-21 15:39)
   ☐ Badges
 Features:
@@ -28,5 +28,5 @@ Future work:
   ☐ Consider polyfills/ponyfills
 Docs:
   ☐ Work out how to add package replacements & detailed text
-  ☐ Parse .ts file to .json
-  ☐ Generate reference site from JSON
+  ✔ Parse .ts file to .md @done(25-11-01 12:41)
+  ✔ Generate reference site from Markdown @done(25-11-01 12:41)

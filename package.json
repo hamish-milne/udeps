@@ -1,6 +1,9 @@
 {
   "name": "udeps",
   "version": "0.0.0-dev",
+  "license": "MIT",
+  "description": "A micro-dependency manager for JavaScript and TypeScript projects.",
+  "repository": "https://github.com/hamish-milne/udeps",
   "type": "module",
   "engines": {
     "node": ">=18"
@@ -35,7 +38,7 @@
   "scripts": {
     "sdks": "yarn dlx @yarnpkg/sdks vscode",
     "run-ts": "node --require ./.pnp.cjs --experimental-loader ./.pnp.loader.mjs --experimental-strip-types",
-    "build": "esbuild --bundle ./src/index.ts --outfile=./dist/index.cjs --sourcemap --tsconfig=./tsconfig.src.json --platform=node --format=cjs",
+    "build": "esbuild --bundle ./src/index.ts --outfile=./dist/index.cjs --sourcemap --tsconfig=./tsconfig.src.json --platform=node --format=cjs --minify --analyze",
     "test": "vitest run",
     "docs:gen": "yarn run-ts ./src/registryDocs.ts",
     "docs:dev": "vitepress dev docs",
