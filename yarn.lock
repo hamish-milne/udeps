@@ -2814,6 +2814,8 @@ __metadata:
     vitepress: "npm:2.0.0-alpha.12"
     vitest: "npm:^3.2.4"
     vue: "npm:^3.5.22"
+  bin:
+    udeps: ./dist/index.cjs
   languageName: unknown
   linkType: soft
 
