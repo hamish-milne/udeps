@@ -1,4 +1,6 @@
 {
+  "name": "udeps",
+  "version": "0.0.0-dev",
   "type": "module",
   "engines": {
     "node": ">=18"
@@ -39,5 +41,8 @@
     "docs:dev": "vitepress dev docs",
     "docs:build": "vitepress build docs",
     "docs:preview": "vitepress preview docs"
-  }
+  },
+  "files": [
+    "dist/index.cjs"
+  ]
 }
