@@ -128,6 +128,14 @@ test("isCI", () => {
   process.env = originalEnv;
 });
 
+test("isEmail", () => {
+  expect(udeps.isEmail("example@example.com")).toBe(true);
+  expect(udeps.isEmail("john_doe+test@sub.domain.tld")).toBe(true);
+  expect(udeps.isEmail("not an email")).toBe(false);
+  expect(udeps.isEmail("example@.com")).toBe(false);
+  expect(udeps.isEmail("example@localhost")).toBe(true);
+});
+
 test("isEven", () => {
   expect(udeps.isEven(2)).toBe(true);
   expect(udeps.isEven(3)).toBe(false);
@@ -229,6 +237,13 @@ test("isPositiveZero", () => {
   expect(udeps.isPositiveZero(Infinity)).toBe(false);
 });
 
+test("isShebang", () => {
+  expect(udeps.isShebang("#!/usr/bin/env node")).toBe(true);
+  expect(udeps.isShebang("#! /bin/bash")).toBe(true);
+  expect(udeps.isShebang("not a shebang")).toBe(false);
+  expect(udeps.isShebang(" #!/usr/bin/env python")).toBe(false);
+});
+
 test("isString", () => {
   expect(udeps.isString("hello")).toBe(true);
   expect(udeps.isString("")).toBe(true);
@@ -248,6 +263,14 @@ test("isTouchDevice", () => {
   expect(udeps.isTouchDevice()).toBe(false);
 });
 
+test("isWhitespace", () => {
+  expect(udeps.isWhitespace("")).toBe(true);
+  expect(udeps.isWhitespace("   ")).toBe(true);
+  expect(udeps.isWhitespace("\n\t")).toBe(true);
+  expect(udeps.isWhitespace(" hello ")).toBe(false);
+  expect(udeps.isWhitespace("world")).toBe(false);
+});
+
 test("maxBy", () => {
   const array = [{ value: 1 }, { value: 3 }, { value: 2 }];
   const maxItem = udeps.maxBy(array, (item) => item.value);
@@ -260,13 +283,22 @@ test("minBy", () => {
   expect(minItem).toEqual({ value: 0 });
 });
 
+test("normalizePathSlashes", () => {
+  expect(udeps.normalizePathSlashes("C:\\Users\\Test\\file.txt")).toBe(
+    "C:/Users/Test/file.txt",
+  );
+  expect(udeps.normalizePathSlashes("\\\\?\\C:\\Users\\Test\\file.txt")).toBe(
+    "\\\\?\\C:\\Users\\Test\\file.txt",
+  );
+});
+
 test("objectEntries", () => {
   const obj = { a: 1, b: 2, c: 3 };
   const entries = Array.from(udeps.objectEntries(obj));
   expect(entries).toEqual(Object.entries(obj));
 });
 
-test.each(allLibs)("objectFilter", ({ module }) => {
+test.each(allLibs)("objectFilter ($name)", ({ module }) => {
   const obj = { a: 1, b: "two", c: 3, d: "four" };
   const filtered = module.objectFilter(obj, (_key, value) => {
     return typeof value === "string";
@@ -291,7 +323,7 @@ test("objectHasOwn", () => {
   expect(udeps.objectHasOwn(obj, "c")).toBe(false);
 });
 
-test.each(allLibs)("objectMap", ({ module }) => {
+test.each(allLibs)("objectMap ($name)", ({ module }) => {
   const obj = { a: 1, b: 2, c: 3 };
   const mapped = module.objectMap(obj, (_key, value) => value * 2);
   expect(mapped).toEqual({ a: 2, b: 4, c: 6 });
@@ -303,7 +335,7 @@ test("objectValues", () => {
   expect(values).toEqual(Object.values(obj));
 });
 
-test.each(allLibs)("omit", ({ module }) => {
+test.each(allLibs)("omit ($name)", ({ module }) => {
   const obj = { a: 1, b: 2, c: 3, d: 4 };
   const omitted = module.omit(obj, ["b", "d"]);
   expect(omitted).toEqual({ a: 1, c: 3 });

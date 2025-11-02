@@ -245,6 +245,18 @@ export function isCI() {
 }
 
 /**
+ * Checks if a string is a valid email address according to the HTML specification: https://html.spec.whatwg.org/multipage/input.html#valid-e-mail-address
+ * @param str   String to check
+ * @returns     True if string is a valid email, false otherwise
+ * @requires    ES5
+ */
+export function isEmail(str: string) {
+  return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(
+    str,
+  );
+}
+
+/**
  * Checks if a number is even.
  * @param num    Number to check
  * @returns      True if even, false otherwise
@@ -355,6 +367,16 @@ export function isPositiveZero(num: number) {
 }
 
 /**
+ * Checks if a string is a shebang (i.e., starts with "#!").
+ * @param str   String to check
+ * @returns     True if string is a shebang, false otherwise
+ * @requires    ES5
+ */
+export function isShebang(str: string) {
+  return str.startsWith("#!");
+}
+
+/**
  * Checks if a value is a string.
  * Note that this does not account for wrapper objects or cross-realm values, both of which are extremely rare in practice.
  * @param value   Value to check
@@ -373,6 +395,16 @@ export function isString(value: unknown): value is string {
  */
 export function isTouchDevice() {
   return "ontouchstart" in window || navigator.maxTouchPoints > 0;
+}
+
+/**
+ * Checks if a string is empty or consists only of whitespace characters.
+ * @param str   String to check
+ * @returns     True if string is empty or whitespace, false otherwise
+ * @requires    ES5
+ */
+export function isWhitespace(str: string) {
+  return /^\s*$/.test(str);
 }
 
 /**
@@ -399,6 +431,16 @@ export function minBy<T>(arr: readonly T[], selector: (item: T) => number) {
   return arr.reduce((minItem, currentItem) =>
     selector(currentItem) < selector(minItem) ? currentItem : minItem,
   );
+}
+
+/**
+ * Replaces backslashes in a path string with forward slashes, unless the path starts with
+ * the [Windows extended-length prefix](https://learn.microsoft.com/en-us/dotnet/standard/io/file-path-formats#skip-normalization) (`\\?\`).
+ * @param path   Path string to normalize
+ * @returns      Normalized path string
+ */
+export function normalizePathSlashes(path: string) {
+  return path.startsWith(`\\\\?\\`) ? path : path.replace(/\\/g, "/");
 }
 
 /**
@@ -482,7 +524,7 @@ export function objectMap<T extends object, U>(
  * @param obj   Object to get values from
  * @returns     Array of values
  * @requires    ES5
- * @deprecated  since=ES2017.Object, replace-with={@link Object.values}, inline=consider
+ * @deprecated  since=ES2017.Object, replace-with={@link Object.values}
  */
 export function objectValues<T>(obj: { [s: string]: T }) {
   return Object.keys(obj).map((key) => obj[key]);
