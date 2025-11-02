@@ -24,6 +24,18 @@ npx udeps search objectFilter # Search for micro-dependencies
 npx udeps add objectFilter # Add micro-dependency to your project
 ```
 
+**Node.js 18+** is required. You can also use [bun](https://bun.sh/):
+
+```bash
+bunx --bun udeps
+```
+
+or [deno](https://deno.land/):
+
+```bash
+deno run -A npm:udeps
+```
+
 ## Configuration
 
 The CLI looks for a `udeps.json` file in your project's root directory. You can customize the registry URL, target platform, and other settings in this file. For example:
