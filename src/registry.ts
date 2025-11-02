@@ -92,9 +92,16 @@ export async function* loadRegistries(config: UdepsConfig) {
   }
 }
 
+export const linkPattern = /\{@link\s+([^}]+)\}/g;
+
 export function getDocsUrl(functionName: string) {
-  const parts = functionName.split(".").filter((x) => x !== "prototype");
-  return `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/${parts.join("/")}`;
+  const parts = functionName.split(".");
+  switch (parts[0]) {
+    case "Buffer":
+      return `https://nodejs.org/api/${parts[0].toLowerCase()}.html`;
+    default:
+      return `https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/${parts.filter((x) => x !== "prototype").join("/")}`;
+  }
 }
 
 export interface DeprecatedReason {

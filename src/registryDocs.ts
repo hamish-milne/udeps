@@ -2,7 +2,14 @@ import { mkdirSync, readdirSync, readFileSync, writeFileSync } from "node:fs";
 import { parse as docParse } from "comment-parser";
 import { isExportFunction, parseJs, printJs } from "./codeUtils.ts";
 import { parseTagProperties } from "./libSupport.ts";
-import { type DeprecatedReason, getDocsUrl } from "./registry.ts";
+import { type DeprecatedReason, getDocsUrl, linkPattern } from "./registry.ts";
+
+function replaceLinkTags(text: string) {
+  return text.replace(linkPattern, (_, functionName) => {
+    const url = getDocsUrl(functionName);
+    return `[${functionName}](${url})`;
+  });
+}
 
 mkdirSync("docs/registry", { recursive: true });
 for (const file of readdirSync("registry")) {
@@ -27,7 +34,7 @@ for (const file of readdirSync("registry")) {
           const doc = docParse(`/*${docComment.value}*/`)[0];
           if (doc) {
             markdownOut += `## ${node.declaration.id.name}\n\n`;
-            markdownOut += `${doc.description}\n\n`;
+            markdownOut += `${replaceLinkTags(doc.description)}\n\n`;
             const requiresTag = doc.tags
               .filter((tag) => tag.tag === "requires")
               .map((tag) => tag.name);
@@ -49,13 +56,24 @@ for (const file of readdirSync("registry")) {
                 const reason = parseTagProperties<keyof DeprecatedReason>(tag);
                 markdownOut += `> [!${reason.since || reason.inline === "recommend" ? "IMPORTANT" : "NOTE"}]\n> `;
                 if (reason.since) {
-                  markdownOut += `**Deprecated since ${reason.since.split(".")[0]}.** `;
+                  const since = reason.since.split(".")[0];
+                  switch (since) {
+                    case "node":
+                      markdownOut += `Unnecessary in Node.js or compatible environments. `;
+                      break;
+                    case "DOM":
+                      markdownOut += `Unnecessary in browser environments. `;
+                      break;
+                    default:
+                      markdownOut += `**Deprecated since ${reason.since.split(".")[0]}.** `;
+                      break;
+                  }
                 }
                 if (reason["replace-with"]) {
                   markdownOut += `Use [${reason["replace-with"]}](${getDocsUrl(reason["replace-with"])}) instead. `;
                 }
                 if (reason.inline === "recommend") {
-                  markdownOut += `You should inline this function instead of importing it.`;
+                  markdownOut += `You should inline this expression instead of defining a function.`;
                 }
                 if (reason.inline && reason.inline !== "recommend") {
                   markdownOut += `Consider inlining this function.`;
